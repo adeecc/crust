@@ -1,0 +1,161 @@
+Program
+    ::= Declarations
+
+Declarations
+    ::= Declaration
+    ::= Declaration Declarations
+
+Declaration
+    ::= VariableDeclaration
+    ::= FunctionDeclaration
+
+VariableDeclaration
+    ::= 'let' DeclarationList ';' 
+
+DeclarationList
+    ::= AtomicDeclaration | AtomicDeclaration, DeclarationList
+
+AtomicDeclaration
+    ::= Identifier ':' Type ('=' Expression)?
+
+FunctionDeclaration
+    ::= 'fn' ':' Type Identifier '(' DeclarationList ')' CompoundStatement
+
+CompoundStatement
+    ::= '{' Statement* '}'
+
+Statement
+    ::= VariableDeclaration
+    ::= Assignment
+    ::= Conditional
+    ::= Loop
+    ::= Return
+    ::= FunctionCall
+    ::= CompoundStatement
+
+Type
+    ::= IntType
+    ::= FloatType
+    ::= UnsignedIntType
+    ::= StringType
+    ::= BoolType
+    ::= VoidType
+    ::= ArrayType
+
+IntType
+    ::= 'i32'
+    ::= 'i64'
+
+
+FloatType
+    ::= 'f32'
+    ::= 'f64'
+
+
+UnsignedIntType
+    ::= 'u8'
+    ::= 'u32'
+    ::= 'u64'
+
+
+StringType
+    ::= 'string'
+
+
+BoolType
+    ::= 'bool'
+
+
+VoidType
+    ::= 'void'
+
+
+ArrayType
+    ::= '[' Type ',' IntExp ']'
+
+
+Assignment
+    ::= AtomicAssignment ';'
+    ::= AtomicAssignment, Assignment
+
+AtomicAssignment
+    ::= Identifier '=' Expression
+
+Conditional
+    ::= 'if' '(' Expression ')' CompoundStatement 
+            ('elif' '(' Expression ')' CompoundStatement)* 
+            ('else' CompoundStatement)?
+
+Loop
+    ::= ForLoop
+    ::= WhileLoop
+
+
+Return
+    ::= 'return' Expression? ';'
+
+ForLoop
+    ::= 'for' Identifier 'in' Range CompoundStatement
+
+Range
+    ::= IntExp '..' IntExp ('..' IntExp)?
+
+WhileLoop
+    ::= 'while' Expression CompoundStatement
+
+
+Expression
+    ::= Identifier
+    ::= BracketedExpression
+    ::= BinExpr
+    ::= IntExp
+    ::= FloatExpr
+    ::= StringExp
+    ::= BooleanExpr
+    ::= CallExpression
+
+Identifier
+    ::= [a-zA-Z_][a-zA-Z0-9_]
+
+BracketedExpression
+    ::= '(' Expression ')'
+
+BinExpr
+    ::= Expression BinOperator Expression
+
+IntExp
+    ::= [+-]?[0-9]+
+
+FloatExpr
+    ::= [+-]?[0-9]+ '.' [0-9]* ([eE] IntExp)?
+
+StringExp
+    ::= '"'.*'"'
+
+BooleanExpr
+    ::= 'true'
+    ::= 'false'
+
+CallExpression
+    ::= Identifier '(' FormalArguments ')'
+
+FormalArguments
+    ::= Expression
+    ::= Expression, FormalArguments
+
+
+BinOperator
+    ::= '+'
+    ::= '-'
+    ::= '*'
+    ::= '/'
+    ::= '%'
+    ::= 'and'
+    ::= 'or'
+    ::= 'not'
+    ::= '>'
+    ::= '>='
+    ::= '=='
+    ::= '!='
+    ::= '<='
+    ::= '<'
