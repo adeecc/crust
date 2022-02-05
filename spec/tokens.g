@@ -75,6 +75,7 @@ LSQUAREBRACKET: '['
 RSQUAREBRACKET: ']'
 LPAREN: '('
 RPAREN: ')'
+ASSIGN: =
 
 
 # Comment

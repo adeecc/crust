@@ -1,4 +1,4 @@
-#include "sourceloc.h"
+#include "sourceloc.hpp"
 
 using namespace Crust;
 
