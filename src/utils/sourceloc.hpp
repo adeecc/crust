@@ -7,8 +7,8 @@ class SourceLocation {
 
     void init();
     void advance(bool nextLine = false);
-    const unsigned getCurrentColumn() const { return mCurrentColumn; }
-    const unsigned getCurrentLine() const { return mCurrentLine; }
+    unsigned getCurrentColumn() const { return mCurrentColumn; }
+    unsigned getCurrentLine() const { return mCurrentLine; }
 
    private:
     unsigned mCurrentLine;   /*!< Current line in the file the lexer is at */

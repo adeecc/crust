@@ -8,7 +8,8 @@ class Lexer {
    private:
     // Common::Type mCurrentType; /*!< Current type recognized by the lexer */
     SourceLocation mSrcLoc; /*!< Information about the current location of the lexer in the file */
-    int mCurrentNumber;
+    int mCurrentInt;
+    float mCurrentFloat;
     std::string mCurrentStr;
     std::string mBuffer;                   /*!< The lexer buffer */
     std::string::const_iterator mBufferIt; /*!< Iterator of the lexer buffer */
@@ -67,7 +68,6 @@ class Lexer {
         OP_MOD,
         OP_AND,
         OP_OR,
-        OP_NOT,
         OP_GT,
         OP_GE,
         OP_EQ,
@@ -101,9 +101,9 @@ class Lexer {
     };
 
     Lexer()
-        : mCurrentNumber{0} {};
+        : mCurrentInt{0}, mCurrentFloat{0.0f} {};
 
-    bool init(const std::string& filename); // TODO: use string_view
+    bool init(const std::string& filename);  // TODO: use string_view
 
     Token getNextToken();
 
@@ -111,10 +111,12 @@ class Lexer {
 
     const SourceLocation GetCurrentLocation() const { return mSrcLoc; }
 
-    int getCurrentNumber() const { return mCurrentNumber; }
+    int getCurrentInt() const { return mCurrentInt; }
+    float getCurrentFloat() const { return mCurrentFloat; }
 
-    const std::string& etCurrentStr() const { return mCurrentStr; }
+    const std::string& getCurrentStr() const { return mCurrentStr; }
 
-   public:
+   private:
+    Token tokenizeCurrentStr();
 };
-}  // namespace Frontend
+}  // namespace Crust
