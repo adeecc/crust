@@ -79,6 +79,7 @@ class Lexer {
         SEMI_COLON,
         COLON,
         COMMA,
+        AMP,
         RANGE,
         ASSIGN,
         REFERNCE,

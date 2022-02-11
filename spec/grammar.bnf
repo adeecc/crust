@@ -82,8 +82,8 @@ AtomicAssignment
     ::= Identifier '=' Expression
 
 Conditional
-    ::= 'if' '(' Expression ')' CompoundStatement 
-            ('elif' '(' Expression ')' CompoundStatement)* 
+    ::= 'if'  Expression  CompoundStatement 
+            ('elif' Expression CompoundStatement)* 
             ('else' CompoundStatement)?
 
 Loop

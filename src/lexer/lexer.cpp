@@ -41,6 +41,9 @@ Lexer::Token Lexer::getNextToken() {
         case ';':
             ++mBufferIt;
             return Token::SEMI_COLON;
+        case '&':
+            ++mBufferIt;
+            return Token::AMP;
         case '{':
             ++mBufferIt;
             return Token::LCURLYBRACE;
@@ -103,6 +106,14 @@ Lexer::Token Lexer::getNextToken() {
             } else {
                 return Token::OP_LT;
             }
+        case '!':
+            if (*(++mBufferIt) == '=') {
+                ++mBufferIt;
+                return Token::OP_NE;
+            } else {
+                return Token::UNKNOWN;  // TODO: Add the Not operator?
+            }
+
         case '\"':
             mCurrentStr.clear();
             while ((++mBufferIt != mBuffer.end()) && (*mBufferIt != '\n') && (*mBufferIt != '\"'))
