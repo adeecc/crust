@@ -119,5 +119,6 @@ class Lexer {
 
    private:
     Token tokenizeCurrentStr();
+    char advance();
 };
 }  // namespace Crust
