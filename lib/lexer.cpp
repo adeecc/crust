@@ -1,10 +1,11 @@
-#include "lexer.hpp"
+#include <crust/lexer.hpp>
 
 #include <algorithm>
 #include <fstream>
 #include <iterator>
 
-#include "../utils/errorlogger.hpp"
+#include <crust/utils/errorlogger.hpp>
+
 
 using namespace Crust;
 

@@ -1,8 +1,8 @@
 #include <iostream>
 #include <string>
 
-#include "lexer/lexer.hpp"
-#include "utils/printhelper.hpp"
+#include <crust/lexer.hpp>
+#include <crust/utils/printhelper.hpp>
 
 int main() {
     Crust::Lexer lexer;
