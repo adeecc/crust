@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-#include "../utils/sourceloc.hpp"
+#include <crust/utils/sourceloc.hpp>
 
 namespace Crust {
 class Lexer {

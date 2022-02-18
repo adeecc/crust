@@ -1,7 +1,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "../lexer/lexer.hpp"
+#include <crust/lexer.hpp>
 
 std::unordered_map<Crust::Lexer::Token, std::string> printLogger = {
     {Crust::Lexer::Token::OP_PLUS, "+"},
