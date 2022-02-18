@@ -19,10 +19,16 @@ bool Lexer::init(const std::string& filename) {
     return false;
 }
 
+char Lexer::advance() {
+    mSrcLoc.advance(*mBufferIt == '\n');
+    ++mBufferIt;
+    if (mBufferIt == mBuffer.end()) return 0;
+    return *mBufferIt;
+}
+
 Lexer::Token Lexer::getNextToken() {
     while (mBufferIt != mBuffer.end() && isspace(*mBufferIt)) {
-        mSrcLoc.advance(*mBufferIt == '\n');
-        ++mBufferIt;
+        advance();
     }
 
     // End of file, we're done
@@ -33,82 +39,82 @@ Lexer::Token Lexer::getNextToken() {
 
     switch (currentChar) {
         case ',':
-            ++mBufferIt;
+            advance();
             return Token::COMMA;
         case ':':
-            ++mBufferIt;
+            advance();
             return Token::COLON;
         case ';':
-            ++mBufferIt;
+            advance();
             return Token::SEMI_COLON;
         case '&':
-            ++mBufferIt;
+            advance();
             return Token::AMP;
         case '{':
-            ++mBufferIt;
+            advance();
             return Token::LCURLYBRACE;
         case '[':
-            ++mBufferIt;
+            advance();
             return Token::LSQUAREBRACKET;
         case '(':
-            ++mBufferIt;
+            advance();
             return Token::LPAREN;
         case '}':
-            ++mBufferIt;
+            advance();
             return Token::RCURLYBRACE;
         case ']':
-            ++mBufferIt;
+            advance();
             return Token::RSQUAREBRACKET;
         case ')':
-            ++mBufferIt;
+            advance();
             return Token::RPAREN;
         case '=':  // TODO: Add test to verify that a distinction is made between assignment and equality
-            if (*(++mBufferIt) == '=') {
-                ++mBufferIt;
+            if (advance() == '=') {
+                advance();
                 return Token::OP_EQ;
             } else {
                 return Token::ASSIGN;
             }
 
         case '+':
-            ++mBufferIt;
+            advance();
             return Token::OP_PLUS;
         case '*':
-            ++mBufferIt;
+            advance();
             return Token::OP_MULT;
         case '%':
-            ++mBufferIt;
+            advance();
             return Token::OP_MOD;
         case '-':
-            ++mBufferIt;
+            advance();
             return Token::OP_MINUS;
         case '/':
-            if (*(++mBufferIt) == '/') {
+            if (advance() == '/') {
                 // A comment covers a whole line
                 while (mBufferIt != mBuffer.end() && *mBufferIt != '\n')
-                    ++mBufferIt;
+                    advance();
                 return Token::COMMENT;
             } else {
                 return Token::OP_DIV;
             }
 
         case '>':
-            if (*(++mBufferIt) == '=') {
-                ++mBufferIt;
+            if (advance() == '=') {
+                advance();
                 return Token::OP_GE;
             } else {
                 return Token::OP_GT;
             }
         case '<':
-            if (*(++mBufferIt) == '=') {
-                ++mBufferIt;
+            if (advance() == '=') {
+                advance();
                 return Token::OP_LE;
             } else {
                 return Token::OP_LT;
             }
         case '!':
-            if (*(++mBufferIt) == '=') {
-                ++mBufferIt;
+            if (advance() == '=') {
+                advance();
                 return Token::OP_NE;
             } else {
                 return Token::UNKNOWN;  // TODO: Add the Not operator?
@@ -116,7 +122,7 @@ Lexer::Token Lexer::getNextToken() {
 
         case '\"':
             mCurrentStr.clear();
-            while ((++mBufferIt != mBuffer.end()) && (*mBufferIt != '\n') && (*mBufferIt != '\"'))
+            while ((advance() != 0) && (*mBufferIt != '\n') && (*mBufferIt != '\"'))
                 mCurrentStr += *mBufferIt;
 
             if (mBufferIt == mBuffer.end()) {  // Buffer Ended before closing string
@@ -126,22 +132,21 @@ Lexer::Token Lexer::getNextToken() {
                 ErrorLogger::printErrorAtLocation(ErrorLogger::ErrorType::NEW_LINE_IN_LITERAL, mSrcLoc);
 
                 while ((mBufferIt != mBuffer.end()) && (*mBufferIt != '\"'))
-                    ++mBufferIt;
+                    advance();
 
-                ++mBufferIt;
+                advance();
 
                 return Token::UNKNOWN;
             } else {  // String Found!
-                ++mBufferIt;
+                advance();
                 return Token::STR_LITERAL;
             }
 
         default:
             if (isalpha(currentChar) or currentChar == '_') {
                 mCurrentStr = currentChar;
-                while (++mBufferIt != mBuffer.end() and (isalnum(*mBufferIt) or *mBufferIt == '_')) {
+                while (advance() != 0 and (isalnum(*mBufferIt) or *mBufferIt == '_')) {
                     mCurrentStr += *mBufferIt;
-                    mSrcLoc.advance();
                 }
 
                 return tokenizeCurrentStr();
@@ -151,15 +156,15 @@ Lexer::Token Lexer::getNextToken() {
                 std::string numberStr;
                 do {
                     numberStr += *mBufferIt;
-                } while (isdigit(*(++mBufferIt)));
+                } while (isdigit(advance()));
 
                 if (*mBufferIt == '.') {
                     numberStr += *mBufferIt;
-                    ++mBufferIt;
+                    advance();
 
                     do {
                         numberStr += *mBufferIt;
-                    } while (isdigit(*(++mBufferIt)));
+                    } while (isdigit(advance()));
 
                     mCurrentFloat = std::stof(numberStr);
                     return Token::FLOAT_LITERAL;
@@ -169,10 +174,10 @@ Lexer::Token Lexer::getNextToken() {
                     ErrorLogger::printErrorAtLocation(ErrorLogger::ErrorType::NUMBER_BAD_SUFFIX, mSrcLoc);
 
                     while ((mBufferIt != mBuffer.end()) and (*mBufferIt != ';'))
-                        ++mBufferIt;
+                        advance();
 
                     if (mBufferIt != mBuffer.end())
-                        ++mBufferIt;
+                        advance();
 
                     return Token::UNKNOWN;
                 }
