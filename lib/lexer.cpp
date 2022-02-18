@@ -1,11 +1,8 @@
-#include <crust/lexer.hpp>
-
 #include <algorithm>
+#include <crust/lexer.hpp>
+#include <crust/utils/errorlogger.hpp>
 #include <fstream>
 #include <iterator>
-
-#include <crust/utils/errorlogger.hpp>
-
 
 using namespace Crust;
 
@@ -39,12 +36,23 @@ Lexer::Token Lexer::getNextToken() {
     const char currentChar = *mBufferIt;
 
     switch (currentChar) {
+        case '.':
+            if (advance() == '.') {
+                advance();
+                return Token::RANGE;
+            } else {
+                return Token::DOT;
+            }
         case ',':
             advance();
             return Token::COMMA;
         case ':':
-            advance();
-            return Token::COLON;
+            if (advance() == ':') {
+                advance();
+                return Token::NAMESPACE;
+            } else {
+                return Token::COLON;
+            }
         case ';':
             advance();
             return Token::SEMI_COLON;
