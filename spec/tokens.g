@@ -67,7 +67,7 @@ SEMI_COLON: `;`
 COLON: `:`
 COMMA: `,`
 RANGE: `..`
-REFERNCE: `&`
+AMP: `&`
 NAMESPACE: `::`
 LCURLYBRACE: '{'
 RCURLYBRACE: '}'

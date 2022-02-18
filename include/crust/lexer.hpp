@@ -76,13 +76,13 @@ class Lexer {
         OP_LT,
 
         // Misc
+        DOT,
         SEMI_COLON,
         COLON,
         COMMA,
         AMP,
         RANGE,
         ASSIGN,
-        REFERNCE,
         NAMESPACE,
         LCURLYBRACE,
         RCURLYBRACE,

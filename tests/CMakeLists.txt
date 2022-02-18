@@ -10,6 +10,7 @@ FetchContent_MakeAvailable(googletest)
 # Add GoogleTest
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY  "${PROJECT_SOURCE_DIR}/bin/tests")
+set(WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/tests")
 
 # Tests need to be added as executables first
 add_executable(lexer_tests lexer_tests.cpp)
