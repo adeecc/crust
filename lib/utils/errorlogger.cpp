@@ -1,15 +1,13 @@
 #include <crust/utils/errorlogger.hpp>
-
-#include <iostream>
-
 #include <crust/utils/sourceloc.hpp>
+#include <iostream>
 
 using namespace Crust;
 
 std::unordered_map<ErrorLogger::ErrorType, std::string> ErrorLogger::mErrorMessages =
     {
-        // Token
-        {ErrorType::UNKNOWN_TOKEN, "ERROR: Unknow Token"},
+        // Symbol
+        {ErrorType::INVALID_SYMBOL, "ERROR: Invalid Symbol used"},
         // Array
         {ErrorType::ARRAY_EMPTY_EXPR, "ERROR: Empty array expression"},
         {ErrorType::ARRAY_MISSING_COMMA, "ERROR: Missing comma between two array elements"},

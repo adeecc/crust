@@ -1,7 +1,6 @@
 #pragma once
-#include <string>
-
 #include <crust/utils/sourceloc.hpp>
+#include <string>
 
 namespace Crust {
 class Lexer {
@@ -40,6 +39,7 @@ class Lexer {
 
         // Loops
         KW_FOR,
+        KW_IN,
         KW_WHILE,
         KW_BREAK,
         KW_CONTINUE,

@@ -1,6 +1,6 @@
 import std;
 
-fn:i32 factorial(n: i32){
+fn: i32 factorial(n: i32){
     if n == 1 {
         return 1;
     }

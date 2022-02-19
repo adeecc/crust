@@ -24,6 +24,7 @@ KW_ELSE: else
 
 # Loops
 KW_FOR: for
+KW_IN: in
 KW_WHILE: while
 KW_BREAK: break
 KW_CONTINUE: continue

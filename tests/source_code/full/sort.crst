@@ -3,8 +3,8 @@ import std;
 fn: [i32, 6] bubbleSort(A: [i32, 6]){
     let n: i32 = 6;
 
-    for i in 0 .. n - 1 {
-        for j in 0 .. n - i - 1 {
+    for i in 0 .. (n - 1) {
+        for j in 0 .. (n - i - 1) {
             if A[j] > A[j + 1] {            // swap
                 let t: i32 = A[j];
                 A[j] = A[j + 1];

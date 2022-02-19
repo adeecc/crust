@@ -14,8 +14,8 @@ class SourceLocation;
 class ErrorLogger {
    public:
     enum class ErrorType : unsigned int {
-        // Token
-        UNKNOWN_TOKEN,
+        // Symbol
+        INVALID_SYMBOL,
 
         // Array
         ARRAY_EMPTY_EXPR,
