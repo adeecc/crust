@@ -1,0 +1,15 @@
+import std;
+
+fn: void main(){
+    let a: i32 = 10, b: i32 = 20;
+
+    print(a);
+    print(b);
+
+    let t: i32 = a;
+    a = b;
+    b = t;
+
+    print(a);
+    print(b);
+}

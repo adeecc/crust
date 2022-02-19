@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18.0)
+cmake_minimum_required(VERSION 3.16.0)
 
 file (GLOB_RECURSE HEADER_LIST CONFIGURE_DEPENDS "${CRust_SOURCE_DIR}/include/crust/*.hpp")
 file (GLOB_RECURSE SOURCES_LIST CONFIGURE_DEPENDS "${CRust_SOURCE_DIR}/lib/*.cpp")

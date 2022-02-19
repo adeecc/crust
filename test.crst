@@ -1,0 +1,14 @@
+import std;
+
+fn:i32 factorial(n: i32){
+    if n == 1 {
+        return 1;
+    }
+    
+    return n * factorial(n - 1);
+}
+
+fn: void main(){
+    let ans: i32 = factorial(10);
+    print(ans);
+}
