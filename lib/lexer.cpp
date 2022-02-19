@@ -126,6 +126,7 @@ Lexer::Token Lexer::getNextToken() {
                 advance();
                 return Token::OP_NE;
             } else {
+                ErrorLogger::printErrorAtLocation(ErrorLogger::ErrorType::INVALID_SYMBOL, mSrcLoc);
                 return Token::UNKNOWN;  // TODO: Add the Not operator?
             }
 
@@ -195,9 +196,14 @@ Lexer::Token Lexer::getNextToken() {
                     mCurrentInt = std::stoi(numberStr);
                     return Token::INT_LITERAL;
                 }
+            } else {
+                advance();
+                ErrorLogger::printErrorAtLocation(ErrorLogger::ErrorType::INVALID_SYMBOL, mSrcLoc);
+                return Token::UNKNOWN;
             }
     }
 
+    ErrorLogger::printErrorAtLocation(ErrorLogger::ErrorType::INVALID_SYMBOL, mSrcLoc);
     return Token::UNKNOWN;
 }
 
@@ -236,6 +242,8 @@ Lexer::Token Lexer::tokenizeCurrentStr() {
         return Token::KW_ELSE;
     else if (mCurrentStr == "for")
         return Token::KW_FOR;
+    else if (mCurrentStr == "in")
+        return Token::KW_IN;
     else if (mCurrentStr == "while")
         return Token::KW_WHILE;
     else if (mCurrentStr == "break")

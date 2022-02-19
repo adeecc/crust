@@ -1,8 +1,7 @@
-#include <iostream>
-#include <string>
-
 #include <crust/lexer.hpp>
 #include <crust/utils/printhelper.hpp>
+#include <iostream>
+#include <string>
 
 int main() {
     Crust::Lexer lexer;
@@ -43,9 +42,16 @@ int main() {
                 std::cout << printTokenName[currentToken] << "\t\t" << printLogger[currentToken] << std::endl;
                 break;
 
-            default:
-                std::cout << std::endl;
+            case Crust::Lexer::Token::TOK_EOF:
+                std::cout << "[EOF] End of File Reached." << std::endl;
+                break;
 
+            case Crust::Lexer::Token::UNKNOWN:
+                std::cout << "Unknown Token" << std::endl;
+                break;
+
+            default:
+                std::cout << "Critical Error. State Should be unrechable!" << std::endl;
                 break;
         }
 
