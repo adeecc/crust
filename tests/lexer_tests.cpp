@@ -18,7 +18,7 @@ class LexerTest : public ::testing::Test {
 
     void checkToken(Lexer::Token expectedToken) {
         mCurrentToken = mLexer.getNextToken();
-        EXPECT_EQ(mCurrentToken, expectedToken) << "Recived Token: " << (int)mCurrentToken << std::endl;
+        EXPECT_EQ(mCurrentToken, expectedToken) << "Recived Token: " << (int)mCurrentToken << std::endl << "Expected Token: " << (int) expectedToken << std::endl;
     }
 
     void checkIntLiteral(int expectedLiteral) {
@@ -195,5 +195,347 @@ TEST_F(LexerTest, ReturnsCorrectComments) {
 
     checkToken(Lexer::Token::TOK_EOF);
 }
+
+TEST_F(LexerTest, ReturnsSwapTokens){
+    useFile("source_code/swap.crst");
+
+    checkToken(Lexer::Token::KW_IMPORT);
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::SEMI_COLON);
+
+    checkToken(Lexer::Token::KW_FN);
+    checkToken(Lexer::Token::COLON);
+    checkToken(Lexer::Token::KW_VOID);
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::LPAREN);
+    checkToken(Lexer::Token::RPAREN);
+
+    checkToken(Lexer::Token::LCURLYBRACE);
+
+    checkToken(Lexer::Token::KW_LET);
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::COLON);
+    checkToken(Lexer::Token::KW_INT_32);
+    checkToken(Lexer::Token::ASSIGN);
+    checkToken(Lexer::Token::INT_LITERAL);
+    checkToken(Lexer::Token::COMMA);
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::COLON);
+    checkToken(Lexer::Token::KW_INT_32);
+    checkToken(Lexer::Token::ASSIGN);
+    checkToken(Lexer::Token::INT_LITERAL);
+    checkToken(Lexer::Token::SEMI_COLON);
+
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::LPAREN);
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::RPAREN);
+    checkToken(Lexer::Token::SEMI_COLON);
+
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::LPAREN);
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::RPAREN);
+    checkToken(Lexer::Token::SEMI_COLON);
+
+    checkToken(Lexer::Token::KW_LET);
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::COLON);
+    checkToken(Lexer::Token::KW_INT_32);
+    checkToken(Lexer::Token::ASSIGN);
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::SEMI_COLON);
+
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::ASSIGN);
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::SEMI_COLON);
+
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::ASSIGN);
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::SEMI_COLON);
+
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::LPAREN);
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::RPAREN);
+    checkToken(Lexer::Token::SEMI_COLON);
+
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::LPAREN);
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::RPAREN);
+    checkToken(Lexer::Token::SEMI_COLON);
+
+    checkToken(Lexer::Token::RCURLYBRACE);
+}
+
+TEST_F(LexerTest, ReturnsFactorialTokens){
+    useFile("source_code/fact.crst");
+
+    checkToken(Lexer::Token::KW_IMPORT);
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::SEMI_COLON);
+
+    checkToken(Lexer::Token::KW_FN);
+    checkToken(Lexer::Token::COLON);
+    checkToken(Lexer::Token::KW_INT_32);
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::LPAREN);
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::COLON);
+    checkToken(Lexer::Token::KW_INT_32);
+    checkToken(Lexer::Token::RPAREN);
+
+    checkToken(Lexer::Token::LCURLYBRACE);
+
+    checkToken(Lexer::Token::KW_IF);
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::OP_EQ);
+    checkToken(Lexer::Token::INT_LITERAL);
+
+    checkToken(Lexer::Token::LCURLYBRACE);
+
+    checkToken(Lexer::Token::KW_RETURN);
+    checkToken(Lexer::Token::INT_LITERAL);
+    checkToken(Lexer::Token::SEMI_COLON);
+
+    checkToken(Lexer::Token::RCURLYBRACE);
+
+    checkToken(Lexer::Token::KW_RETURN);
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::OP_MULT);
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::LPAREN);
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::OP_MINUS);
+    checkToken(Lexer::Token::INT_LITERAL);
+    checkToken(Lexer::Token::RPAREN);
+    checkToken(Lexer::Token::SEMI_COLON);
+
+    checkToken(Lexer::Token::RCURLYBRACE);
+    
+    checkToken(Lexer::Token::KW_FN); // fn
+    checkToken(Lexer::Token::COLON); // :
+    checkToken(Lexer::Token::KW_VOID); // void
+    checkToken(Lexer::Token::IDENTIFIER); // main
+    checkToken(Lexer::Token::LPAREN); // (
+    checkToken(Lexer::Token::RPAREN); // )
+
+    checkToken(Lexer::Token::LCURLYBRACE);
+
+    checkToken(Lexer::Token::KW_LET);
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::COLON);
+    checkToken(Lexer::Token::KW_INT_32);
+    checkToken(Lexer::Token::ASSIGN);
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::LPAREN);
+    checkToken(Lexer::Token::INT_LITERAL);
+    checkToken(Lexer::Token::RPAREN);
+    checkToken(Lexer::Token::SEMI_COLON);
+
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::LPAREN);
+    checkToken(Lexer::Token::IDENTIFIER);
+    checkToken(Lexer::Token::RPAREN);
+    checkToken(Lexer::Token::SEMI_COLON);
+
+    checkToken(Lexer::Token::RCURLYBRACE);
+
+}
+
+TEST_F(LexerTest, ReturnsCorrectSortTokens){
+    useFile("source_code/sort.crst");
+
+    checkToken(Lexer::Token::KW_IMPORT); // import
+    checkToken(Lexer::Token::IDENTIFIER); // std
+    checkToken(Lexer::Token::SEMI_COLON); // ;
+
+    checkToken(Lexer::Token::KW_FN); // fn
+    checkToken(Lexer::Token::COLON); // :
+    checkToken(Lexer::Token::LSQUAREBRACKET); // [
+    checkToken(Lexer::Token::KW_INT_32); // i32
+    checkToken(Lexer::Token::COMMA); // ,
+    checkToken(Lexer::Token::INT_LITERAL); // 6
+    checkToken(Lexer::Token::RSQUAREBRACKET); // ]
+    
+    checkToken(Lexer::Token::IDENTIFIER); // bubbleSort
+    checkToken(Lexer::Token::LPAREN); // (
+    checkToken(Lexer::Token::IDENTIFIER); // A
+    checkToken(Lexer::Token::COLON); // :
+    checkToken(Lexer::Token::LSQUAREBRACKET); // [
+    checkToken(Lexer::Token::KW_INT_32); // i32
+    checkToken(Lexer::Token::COMMA); // ,
+    checkToken(Lexer::Token::INT_LITERAL); // 6
+    checkToken(Lexer::Token::RSQUAREBRACKET); // ]
+    checkToken(Lexer::Token::RPAREN); // )
+
+    checkToken(Lexer::Token::LCURLYBRACE); // {
+
+//     // FUNCTION BODY 
+
+    checkToken(Lexer::Token::KW_LET); // let
+    checkToken(Lexer::Token::IDENTIFIER); // n
+    checkToken(Lexer::Token::COLON); // :
+    checkToken(Lexer::Token::KW_INT_32); // i32
+    checkToken(Lexer::Token::ASSIGN); // = 
+    checkToken(Lexer::Token::INT_LITERAL); // 6
+    checkToken(Lexer::Token::SEMI_COLON); // ;
+
+//     // OUTER FOR LOOP
+    checkToken(Lexer::Token::KW_FOR); // for
+    checkToken(Lexer::Token::IDENTIFIER); // i
+    checkToken(Lexer::Token::IDENTIFIER); // in SHOULD BE KEYWORD
+    checkToken(Lexer::Token::INT_LITERAL); // 0
+    checkToken(Lexer::Token::RANGE); // ..
+    checkToken(Lexer::Token::IDENTIFIER); // n
+    checkToken(Lexer::Token::OP_MINUS); // -
+    checkToken(Lexer::Token::INT_LITERAL); // 1
+
+    checkToken(Lexer::Token::LCURLYBRACE); // {
+
+    checkToken(Lexer::Token::KW_FOR); // for
+    checkToken(Lexer::Token::IDENTIFIER); // j
+    checkToken(Lexer::Token::IDENTIFIER); // in SHOULD BE KEYWORD IN
+    checkToken(Lexer::Token::INT_LITERAL); // 0
+    checkToken(Lexer::Token::RANGE); // .. 
+    checkToken(Lexer::Token::IDENTIFIER); // n
+    checkToken(Lexer::Token::OP_MINUS); // -
+    checkToken(Lexer::Token::IDENTIFIER); // i
+    checkToken(Lexer::Token::OP_MINUS); // -
+    checkToken(Lexer::Token::INT_LITERAL); // 1
+
+    checkToken(Lexer::Token::LCURLYBRACE); // {
+
+//     // IF 
+    checkToken(Lexer::Token::KW_IF); // if
+
+    checkToken(Lexer::Token::IDENTIFIER); // A
+    checkToken(Lexer::Token::LSQUAREBRACKET); // [
+    checkToken(Lexer::Token::IDENTIFIER); // j
+    checkToken(Lexer::Token::RSQUAREBRACKET); // ]
+
+    checkToken(Lexer::Token::OP_GT); // >
+
+    checkToken(Lexer::Token::IDENTIFIER); // A
+    checkToken(Lexer::Token::LSQUAREBRACKET); // [
+    checkToken(Lexer::Token::IDENTIFIER); // j
+    checkToken(Lexer::Token::OP_PLUS); // + 
+    checkToken(Lexer::Token::INT_LITERAL); // 1
+    checkToken(Lexer::Token::RSQUAREBRACKET); // ]
+
+    checkToken(Lexer::Token::LCURLYBRACE); // {
+
+    checkToken(Lexer::Token::COMMENT); //  
+
+    checkToken(Lexer::Token::KW_LET); // let
+    checkToken(Lexer::Token::IDENTIFIER); // t
+    checkToken(Lexer::Token::COLON); // :
+    checkToken(Lexer::Token::KW_INT_32); // i32
+    checkToken(Lexer::Token::ASSIGN); // = 
+    checkToken(Lexer::Token::IDENTIFIER); // A
+    checkToken(Lexer::Token::LSQUAREBRACKET); // [
+    checkToken(Lexer::Token::IDENTIFIER); // j
+    checkToken(Lexer::Token::RSQUAREBRACKET); // ]
+    checkToken(Lexer::Token::SEMI_COLON); // ;
+
+    checkToken(Lexer::Token::IDENTIFIER); // A
+    checkToken(Lexer::Token::LSQUAREBRACKET); // [
+    checkToken(Lexer::Token::IDENTIFIER); // j
+    checkToken(Lexer::Token::RSQUAREBRACKET); // ]
+    checkToken(Lexer::Token::ASSIGN); // =
+    checkToken(Lexer::Token::IDENTIFIER); // A
+    checkToken(Lexer::Token::LSQUAREBRACKET); // [
+    checkToken(Lexer::Token::IDENTIFIER); // j
+    checkToken(Lexer::Token::OP_PLUS); // +
+    checkToken(Lexer::Token::INT_LITERAL); // 1
+    checkToken(Lexer::Token::RSQUAREBRACKET); // ]
+    checkToken(Lexer::Token::SEMI_COLON); // ;
+
+    checkToken(Lexer::Token::IDENTIFIER); // A
+    checkToken(Lexer::Token::LSQUAREBRACKET); // [
+    checkToken(Lexer::Token::IDENTIFIER); // j
+    checkToken(Lexer::Token::OP_PLUS); // +
+    checkToken(Lexer::Token::INT_LITERAL); // 1
+    checkToken(Lexer::Token::RSQUAREBRACKET); // ]
+    checkToken(Lexer::Token::ASSIGN); // = 
+    checkToken(Lexer::Token::IDENTIFIER); // t
+    checkToken(Lexer::Token::SEMI_COLON); // ;
+
+    checkToken(Lexer::Token::RCURLYBRACE); // }
+
+    checkToken(Lexer::Token::RCURLYBRACE); // }
+
+    checkToken(Lexer::Token::RCURLYBRACE); // }
+
+    checkToken(Lexer::Token::KW_RETURN); // return 
+    checkToken(Lexer::Token::IDENTIFIER); // A
+    checkToken(Lexer::Token::SEMI_COLON); // ;
+
+    checkToken(Lexer::Token::RCURLYBRACE); // }
+
+// // MAIN FUNCTION
+
+    checkToken(Lexer::Token::KW_FN); // fn
+    checkToken(Lexer::Token::COLON); // :
+    checkToken(Lexer::Token::KW_VOID); // void
+    checkToken(Lexer::Token::IDENTIFIER); // main
+    checkToken(Lexer::Token::LPAREN); // (
+    checkToken(Lexer::Token::RPAREN); // )
+
+    checkToken(Lexer::Token::LCURLYBRACE); // {
+
+    checkToken(Lexer::Token::KW_LET); // let
+    checkToken(Lexer::Token::IDENTIFIER); // A
+    checkToken(Lexer::Token::COLON); // :
+    checkToken(Lexer::Token::LSQUAREBRACKET); // [
+    checkToken(Lexer::Token::KW_INT_32); // i32
+    checkToken(Lexer::Token::COMMA); // ,
+    checkToken(Lexer::Token::INT_LITERAL); // 6
+    checkToken(Lexer::Token::RSQUAREBRACKET); // ]
+    checkToken(Lexer::Token::ASSIGN); // =
+
+    checkToken(Lexer::Token::LCURLYBRACE);
+    
+    checkToken(Lexer::Token::INT_LITERAL);
+    checkToken(Lexer::Token::COMMA);
+
+    checkToken(Lexer::Token::INT_LITERAL);
+    checkToken(Lexer::Token::COMMA);
+
+    checkToken(Lexer::Token::INT_LITERAL);
+    checkToken(Lexer::Token::COMMA);
+
+    checkToken(Lexer::Token::INT_LITERAL);
+    checkToken(Lexer::Token::COMMA);
+
+    checkToken(Lexer::Token::INT_LITERAL);
+    checkToken(Lexer::Token::COMMA);
+
+    checkToken(Lexer::Token::INT_LITERAL);
+
+    checkToken(Lexer::Token::RCURLYBRACE);
+    checkToken(Lexer::Token::SEMI_COLON);
+
+    checkToken(Lexer::Token::IDENTIFIER); // A
+    checkToken(Lexer::Token::ASSIGN); // =
+    checkToken(Lexer::Token::IDENTIFIER); // bubbleSort
+    checkToken(Lexer::Token::LPAREN); // (
+    checkToken(Lexer::Token::IDENTIFIER); // A
+    checkToken(Lexer::Token::RPAREN); // )
+    checkToken(Lexer::Token::SEMI_COLON); // ;
+
+    checkToken(Lexer::Token::IDENTIFIER); // print
+    checkToken(Lexer::Token::LPAREN); // (
+    checkToken(Lexer::Token::IDENTIFIER); // A
+    checkToken(Lexer::Token::RPAREN); // )
+    checkToken(Lexer::Token::SEMI_COLON); // ;
+    
+    checkToken(Lexer::Token::RCURLYBRACE); // }
+}
+
+
 
 }  // namespace Crust
