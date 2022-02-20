@@ -5,7 +5,12 @@
 
 int main() {
     Crust::Lexer lexer;
-    lexer.init("test.crst");
+    std::string input_file;
+
+    std::cout << "Enter path to file: ";
+    std::cin >> input_file;
+
+    lexer.init(input_file);
 
     Crust::Lexer::Token currentToken;
     currentToken = lexer.getNextToken();

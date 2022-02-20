@@ -1,16 +1,18 @@
 cmake_minimum_required(VERSION 3.16.0)
 
+
 # Testing Library
 FetchContent_Declare(
   googletest
   URL https://github.com/google/googletest/archive/refs/tags/release-1.11.0.zip
-)
-
+  )
+  
 FetchContent_MakeAvailable(googletest)
 # Add GoogleTest
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY  "${PROJECT_SOURCE_DIR}/bin/tests")
-set(WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/tests")
+set(CMAKE_WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/tests")
+file (COPY source_code DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
 # Tests need to be added as executables first
 add_executable(lexer_tests lexer_tests.cpp)
