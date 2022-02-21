@@ -1,0 +1,57 @@
+digraph lexer_fsm {
+    graph [ dpi = 300 ]; 
+	fontname="Helvetica,Arial,sans-serif"
+	node [fontname="Helvetica,Arial,sans-serif"]
+	edge [fontname="Helvetica,Arial,sans-serif"]
+	rankdir=LR;
+	node [shape = doublecircle]; NAMESPACE COLON RANGE DOT GE GT LE LT EQ ASSIGN NE INVALID COMMENT DIV KEYWORD IDENTIFIER CHAR_LITERAL STR_LITERAL INT_LITERAL FLOAT_LITERAL OTHER_SYMBOL;
+	
+	
+	node [shape = circle];
+	
+	
+	
+    empty -> _COLON [label = "[;]"];
+    _COLON -> NAMESPACE [label = "[;]"];
+    _COLON -> COLON [label = "other"];
+    empty -> _DOT [label = "[.]"];
+    _DOT -> RANGE [label = "[.]"];
+    _DOT -> DOT [label = "other"];
+    empty -> _GT [label = "[>]"];
+    _GT -> GE [label = "[=]"];
+    _GT -> GT [label = "other"];
+    empty -> _LT [label = "[<]"];
+    _LT -> LE [label = "[=]"];
+    _LT -> LT [label = "other"];
+    empty -> _EQ [label = "[=]"];
+    _EQ -> EQ [label = "[=]"];
+    _EQ -> ASSIGN [label = "other"];
+    empty -> _NE [label = "[!]"];
+    _NE -> NE [label = "[=]"];
+    _NE -> INVALID [label = "other"];
+    
+    empty -> _DIV [label = "[/]"];
+    _DIV -> COMMENT [label = "[/]"];
+    _DIV -> DIV [label = "other"];
+    
+    empty -> openChar [label = "[']"];
+    openChar -> _char [label = "."];
+    _char -> CHAR_LITERAL [label = "[']"];
+    
+    empty -> openStr [label = "['']"];
+    openStr -> _str [label = "."];
+    _str -> STR_LITERAL [label = "['']"];
+    
+    empty -> KEYWORD [label = "keyword"];
+    
+    empty -> IDENTIFIER [label = "[a-zA-Z_]"];
+    IDENTIFIER -> IDENTIFIER [label = "[a-zA-Z0-9_]"];
+    
+    empty -> INT_LITERAL [label = "[0-9]"];
+    INT_LITERAL -> INT_LITERAL [label = "[0-9]"];
+    INT_LITERAL -> FLOAT_LITERAL [label = "[.]"];
+    FLOAT_LITERAL -> FLOAT_LITERAL [label = "[0-9]"];
+    
+    
+    empty -> OTHER_SYMBOL [label = "otherSymbols"];
+}
