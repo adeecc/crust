@@ -1,8 +1,8 @@
 #include <algorithm>
-#include <crust/lexer.hpp>
-#include <crust/utils/errorlogger.hpp>
+#include <common/errorlogger.hpp>
 #include <fstream>
 #include <iterator>
+#include <parser/lexer.hpp>
 
 using namespace Crust;
 
@@ -77,7 +77,7 @@ Lexer::Token Lexer::getNextToken() {
         case ')':
             advance();
             return Token::RPAREN;
-        case '=':  // TODO: Add test to verify that a distinction is made between assignment and equality
+        case '=':
             if (advance() == '=') {
                 advance();
                 return Token::OP_EQ;
