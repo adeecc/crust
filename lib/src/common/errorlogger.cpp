@@ -1,5 +1,5 @@
-#include <crust/utils/errorlogger.hpp>
-#include <crust/utils/sourceloc.hpp>
+#include <common/errorlogger.hpp>
+#include <common/sourceloc.hpp>
 #include <iostream>
 
 using namespace Crust;

@@ -1,5 +1,5 @@
 #pragma once
-#include <crust/utils/sourceloc.hpp>
+#include <common/sourceloc.hpp>
 #include <string>
 
 namespace Crust {
@@ -104,7 +104,7 @@ class Lexer {
     Lexer()
         : mCurrentInt{0}, mCurrentFloat{0.0f} {};
 
-    bool init(const std::string& filename);  // TODO: use string_view
+    bool init(const std::string& filename);
 
     Token getNextToken();
 
