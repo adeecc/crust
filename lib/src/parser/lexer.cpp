@@ -61,19 +61,19 @@ Lexer::Token Lexer::getNextToken() {
             return Token::AMP;
         case '{':
             advance();
-            return Token::LCURLYBRACE;
+            return Token::LBRACE;
         case '[':
             advance();
-            return Token::LSQUAREBRACKET;
+            return Token::LBRACKET;
         case '(':
             advance();
             return Token::LPAREN;
         case '}':
             advance();
-            return Token::RCURLYBRACE;
+            return Token::RBRACE;
         case ']':
             advance();
-            return Token::RSQUAREBRACKET;
+            return Token::RBRACKET;
         case ')':
             advance();
             return Token::RPAREN;
