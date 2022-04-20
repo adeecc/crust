@@ -232,8 +232,6 @@ std::unique_ptr<FnDecl> Parser::parseFnDecl() {
 std::unique_ptr<ArgList> Parser::parseArgList() {
     auto argListNode = std::make_unique<ArgList>();
 
-    // TODO: add atomic_type condition in while and if
-
     while (mCurrentToken != Lexer::Token::TOK_EOF and
            (mCurrentToken < Lexer::Token::KW_INT_32 and mCurrentToken > Lexer::Token::KW_VOID) and
            mCurrentToken != Lexer::Token::LBRACKET and
@@ -447,13 +445,124 @@ std::unique_ptr<FormalArgList> Parser::parseFormalArgList() {
 }
 
 std::unique_ptr<StmtList> Parser::parseStmtList() {
-    auto parent = std::make_unique<StmtList>();
-    return parent;
+    auto stmtListNode = std::make_unique<StmtList>();
+
+    while (mCurrentToken != Lexer::Token::TOK_EOF and
+           mCurrentToken != Lexer::Token::LBRACE and
+           (mCurrentToken < Lexer::Token::KW_INT_32 and mCurrentToken > Lexer::Token::KW_VOID) and
+           mCurrentToken != Lexer::Token::LBRACKET and
+           mCurrentToken != Lexer::Token::IDENTIFIER and
+           mCurrentToken != Lexer::Token::KW_RETURN and
+           mCurrentToken != Lexer::Token::LPAREN and
+           mCurrentToken != Lexer::Token::INT_LITERAL and
+           mCurrentToken != Lexer::Token::FLOAT_LITERAL and
+           mCurrentToken != Lexer::Token::STR_LITERAL and
+           mCurrentToken != Lexer::Token::KW_TRUE and
+           mCurrentToken != Lexer::Token::KW_FALSE and
+           mCurrentToken != Lexer::Token::KW_IF and
+           mCurrentToken != Lexer::Token::KW_FOR and
+           mCurrentToken != Lexer::Token::KW_WHILE and
+           mCurrentToken != Lexer::Token::RBRACE) {
+        ErrorLogger::printErrorAtLocation(ErrorLogger::ErrorType::VAR_MISSING_IDENTIFIER, mLexer.GetCurrentLocation());
+        mCurrentToken = mLexer.getNextToken();
+    }
+
+    if (mCurrentToken == Lexer::Token::LBRACE or
+        (mCurrentToken >= Lexer::Token::KW_INT_32 and mCurrentToken <= Lexer::Token::KW_VOID) or
+        mCurrentToken == Lexer::Token::LBRACKET or
+        mCurrentToken == Lexer::Token::IDENTIFIER or
+        mCurrentToken == Lexer::Token::KW_RETURN or
+        mCurrentToken == Lexer::Token::LPAREN or
+        mCurrentToken == Lexer::Token::INT_LITERAL or
+        mCurrentToken == Lexer::Token::FLOAT_LITERAL or
+        mCurrentToken == Lexer::Token::STR_LITERAL or
+        mCurrentToken == Lexer::Token::KW_TRUE or
+        mCurrentToken == Lexer::Token::KW_FALSE or
+        mCurrentToken == Lexer::Token::KW_IF or
+        mCurrentToken == Lexer::Token::KW_FOR or
+        mCurrentToken == Lexer::Token::KW_WHILE) {
+        std::unique_ptr<Stmt> stmt = parseStmt();
+        std::unique_ptr<Token> semi_colon = parseToken(Lexer::Token::SEMI_COLON);
+        std::unique_ptr<StmtList> stmtList = parseStmtList();
+
+        stmtListNode.reset(new StmtList(
+            std::move(stmt),
+            std::move(semi_colon),
+            std::move(stmtList)));
+    }
+
+    else if (mCurrentToken == Lexer::Token::RBRACE) {
+        // do nothing
+    }
+
+    return stmtListNode;
 }
 
 std::unique_ptr<Stmt> Parser::parseStmt() {
-    auto parent = std::make_unique<Stmt>();
-    return parent;
+    auto stmtNode = std::make_unique<Stmt>();
+
+    while (mCurrentToken != Lexer::Token::TOK_EOF and
+           (mCurrentToken < Lexer::Token::KW_INT_32 and mCurrentToken > Lexer::Token::KW_VOID) and
+           mCurrentToken != Lexer::Token::LBRACKET and
+           mCurrentToken != Lexer::Token::IDENTIFIER and
+           mCurrentToken != Lexer::Token::KW_IF and
+           mCurrentToken != Lexer::Token::KW_FOR and
+           mCurrentToken != Lexer::Token::KW_WHILE and
+           mCurrentToken != Lexer::Token::KW_RETURN and
+           mCurrentToken != Lexer::Token::LPAREN and
+           mCurrentToken != Lexer::Token::INT_LITERAL and
+           mCurrentToken != Lexer::Token::FLOAT_LITERAL and
+           mCurrentToken != Lexer::Token::STR_LITERAL and
+           mCurrentToken != Lexer::Token::KW_TRUE and
+           mCurrentToken != Lexer::Token::KW_FALSE and
+           mCurrentToken != Lexer::Token::LBRACE) {
+        ErrorLogger::printErrorAtLocation(ErrorLogger::ErrorType::VAR_MISSING_IDENTIFIER, mLexer.GetCurrentLocation());
+        mCurrentToken = mLexer.getNextToken();
+    }
+
+    if ((mCurrentToken >= Lexer::Token::KW_INT_32 and mCurrentToken <= Lexer::Token::KW_VOID) or
+        mCurrentToken == Lexer::Token::LBRACKET) {
+        std::unique_ptr<VarDecl> vardecl = parseVarDecl();
+
+        stmtNode.reset(new Stmt(
+            std::move(vardecl)));
+    }
+
+    else if (mCurrentToken == Lexer::Token::KW_IF) {
+        std::unique_ptr<ConditionalStmt> condn = parseConditionalStmt();
+
+        stmtNode.reset(new Stmt(
+            std::move(condn)));
+    } else if (mCurrentToken == Lexer::Token::KW_FOR and
+               mCurrentToken == Lexer::Token::KW_WHILE) {
+        std::unique_ptr<LoopStmt> loop = parseLoopStmt();
+        stmtNode.reset(new Stmt(
+            std::move(loop)));
+    } else if (mCurrentToken == Lexer::Token::KW_RETURN) {
+        std::unique_ptr<ReturnStmt> returnStmt = parseReturnStmt();
+        stmtNode.reset(new Stmt(
+            std::move(returnStmt)));
+    } else if (mCurrentToken == Lexer::Token::LPAREN or
+               mCurrentToken == Lexer::Token::INT_LITERAL or
+               mCurrentToken == Lexer::Token::FLOAT_LITERAL or
+               mCurrentToken == Lexer::Token::STR_LITERAL or
+               mCurrentToken == Lexer::Token::KW_TRUE or
+               mCurrentToken == Lexer::Token::KW_FALSE) {
+        std::unique_ptr<Expression> exp = parseExpression();
+        stmtNode.reset(new Stmt(
+            std::move(exp)));
+    } else if (mCurrentToken == Lexer::Token::LBRACE) {
+        std::unique_ptr<Token> lbrace = parseToken(Lexer::Token::LBRACE);
+        std::unique_ptr<StmtList> stmtList = parseStmtList();
+        std::unique_ptr<Token> rbrace = parseToken(Lexer::Token::RBRACE);
+
+        stmtNode.reset(new Stmt(
+            std::move(lbrace),
+            std::move(stmtList),
+            std::move(rbrace)));
+    }
+
+    return stmtNode;
 }
 
 std::unique_ptr<AssignmentStmt> Parser::parseAssignmentStmt() {
@@ -503,13 +612,49 @@ std::unique_ptr<ConditionalStmt> Parser::parseConditionalStmt() {
 }
 
 std::unique_ptr<LoopStmt> Parser::parseLoopStmt() {
-    auto parent = std::make_unique<LoopStmt>();
-    return parent;
+    auto loopStmtNode = std::make_unique<LoopStmt>();
+
+    while (mCurrentToken != Lexer::Token::TOK_EOF and
+           mCurrentToken != Lexer::Token::KW_FOR and
+           mCurrentToken != Lexer::Token::KW_WHILE) {
+        ErrorLogger::printErrorAtLocation(ErrorLogger::ErrorType::VAR_MISSING_IDENTIFIER, mLexer.GetCurrentLocation());
+        mCurrentToken = mLexer.getNextToken();
+    }
+
+    if (mCurrentToken == Lexer::Token::KW_FOR) {
+        std::unique_ptr<ForLoop> forLoop = parseForLoop();
+
+        loopStmtNode.reset(new LoopStmt(
+            std::move(forLoop)));
+    } else if (mCurrentToken == Lexer::Token::KW_WHILE) {
+        std::unique_ptr<WhileLoop> whileLoop = parseWhileLoop();
+
+        loopStmtNode.reset(new LoopStmt(
+            std::move(whileLoop)));
+    }
+
+    return loopStmtNode;
 }
 
 std::unique_ptr<ReturnStmt> Parser::parseReturnStmt() {
-    auto parent = std::make_unique<ReturnStmt>();
-    return parent;
+    auto returnStmtNode = std::make_unique<ReturnStmt>();
+
+    while (mCurrentToken != Lexer::Token::TOK_EOF and
+           mCurrentToken != Lexer::Token::KW_RETURN) {
+        ErrorLogger::printErrorAtLocation(ErrorLogger::ErrorType::VAR_MISSING_IDENTIFIER, mLexer.GetCurrentLocation());
+        mCurrentToken = mLexer.getNextToken();
+    }
+
+    if (mCurrentToken == Lexer::Token::KW_RETURN) {
+        std::unique_ptr<Token> kw_return = parseToken(Lexer::Token::KW_RETURN);
+        std::unique_ptr<ReturnVar> returnVar = parseReturnVar();
+
+        returnStmtNode.reset(new ReturnStmt(
+            std::move(kw_return),
+            std::move(returnVar)));
+    }
+
+    return returnStmtNode;
 }
 
 std::unique_ptr<IfBlock> Parser::parseIfBlock() {
@@ -730,8 +875,39 @@ std::unique_ptr<WhileLoop> Parser::parseWhileLoop() {
 }
 
 std::unique_ptr<ReturnVar> Parser::parseReturnVar() {
-    auto parent = std::make_unique<ReturnVar>();
-    return parent;
+    auto returnVarNode = std::make_unique<ReturnVar>();
+
+    while (mCurrentToken != Lexer::Token::TOK_EOF and
+           mCurrentToken != Lexer::Token::LPAREN and
+           mCurrentToken != Lexer::Token::INT_LITERAL and
+           mCurrentToken != Lexer::Token::FLOAT_LITERAL and
+           mCurrentToken != Lexer::Token::STR_LITERAL and
+           mCurrentToken != Lexer::Token::KW_TRUE and
+           mCurrentToken != Lexer::Token::KW_FALSE and
+           mCurrentToken != Lexer::Token::IDENTIFIER and
+           mCurrentToken != Lexer::Token::SEMI_COLON) {
+        ErrorLogger::printErrorAtLocation(ErrorLogger::ErrorType::VAR_MISSING_IDENTIFIER, mLexer.GetCurrentLocation());
+        mCurrentToken = mLexer.getNextToken();
+    }
+
+    if (mCurrentToken == Lexer::Token::LPAREN or
+        mCurrentToken == Lexer::Token::INT_LITERAL or
+        mCurrentToken == Lexer::Token::FLOAT_LITERAL or
+        mCurrentToken == Lexer::Token::STR_LITERAL or
+        mCurrentToken == Lexer::Token::KW_TRUE or
+        mCurrentToken == Lexer::Token::KW_FALSE or
+        mCurrentToken == Lexer::Token::IDENTIFIER) {
+        std::unique_ptr<Expression> exp = parseExpression();
+
+        returnVarNode.reset(new ReturnVar(
+            std::move(exp)));
+    }
+
+    else if (mCurrentToken == Lexer::Token::SEMI_COLON) {
+        // do nothing
+    }
+
+    return returnVarNode;
 }
 
 std::unique_ptr<Token> Parser::parseToken(Lexer::Token token) {
