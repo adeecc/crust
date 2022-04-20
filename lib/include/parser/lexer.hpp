@@ -30,7 +30,6 @@ class Lexer {
 
         // Declarations
         KW_LET,
-        KW_CONST,
 
         // Conditions
         KW_IF,
@@ -41,16 +40,10 @@ class Lexer {
         KW_FOR,
         KW_IN,
         KW_WHILE,
-        KW_BREAK,
-        KW_CONTINUE,
 
         // Functions
         KW_FN,
         KW_RETURN,
-
-        // Modules
-        KW_IMPORT,
-        KW_EXPORT,
 
         // Literals
         INT_LITERAL,
@@ -94,6 +87,9 @@ class Lexer {
         // Comment
         COMMENT,
 
+        // Start of file
+        TOK_SOF,
+
         // End of file
         TOK_EOF,
 
@@ -106,7 +102,9 @@ class Lexer {
 
     bool init(const std::string& filename);
 
+    Token getNextTokenAndComment();
     Token getNextToken();
+
 
     //  Common::Type GetCurrentType() const { return mCurrentType; }
 

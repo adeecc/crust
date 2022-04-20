@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <common/errorlogger.hpp>
 #include <fstream>
+#include <iostream>
 #include <iterator>
 #include <parser/lexer.hpp>
 
@@ -24,7 +25,7 @@ char Lexer::advance() {
     return *mBufferIt;
 }
 
-Lexer::Token Lexer::getNextToken() {
+Lexer::Token Lexer::getNextTokenAndComment() {
     while (mBufferIt != mBuffer.end() && isspace(*mBufferIt)) {
         advance();
     }
@@ -207,6 +208,19 @@ Lexer::Token Lexer::getNextToken() {
     return Token::UNKNOWN;
 }
 
+Lexer::Token Lexer::getNextToken() {
+    Token current = getNextTokenAndComment();
+    while (current == Lexer::Token::COMMENT) {
+        current = getNextTokenAndComment();
+    }
+
+#ifndef NDEBUG
+    std::cout << "Returning Token: " << (int)current << "\n";
+#endif
+
+    return current;
+}
+
 Lexer::Token Lexer::tokenizeCurrentStr() {
     if (mCurrentStr == "i32")
         return Token::KW_INT_32;
@@ -232,8 +246,7 @@ Lexer::Token Lexer::tokenizeCurrentStr() {
         return Token::KW_FALSE;
     else if (mCurrentStr == "let")
         return Token::KW_LET;
-    else if (mCurrentStr == "const")
-        return Token::KW_CONST;
+
     else if (mCurrentStr == "if")
         return Token::KW_IF;
     else if (mCurrentStr == "elif")
@@ -246,18 +259,12 @@ Lexer::Token Lexer::tokenizeCurrentStr() {
         return Token::KW_IN;
     else if (mCurrentStr == "while")
         return Token::KW_WHILE;
-    else if (mCurrentStr == "break")
-        return Token::KW_BREAK;
-    else if (mCurrentStr == "continue")
-        return Token::KW_CONTINUE;
+
     else if (mCurrentStr == "fn")
         return Token::KW_FN;
     else if (mCurrentStr == "return")
         return Token::KW_RETURN;
-    else if (mCurrentStr == "import")
-        return Token::KW_IMPORT;
-    else if (mCurrentStr == "export")
-        return Token::KW_EXPORT;
+
     else if (mCurrentStr == "and")
         return Token::OP_AND;
     else if (mCurrentStr == "or")

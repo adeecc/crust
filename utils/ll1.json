@@ -1,0 +1,155 @@
+{
+  "ProgDeclaration": {
+    "$": "ProgDeclaration -> DeclarationList",
+    "kw_fn": "ProgDeclaration -> DeclarationList",
+    "atomic_type": "ProgDeclaration -> DeclarationList",
+    "lbracket": "ProgDeclaration -> DeclarationList"
+  },
+  "DeclarationList": {
+    "kw_fn": "DeclarationList -> Declaration DeclarationList",
+    "atomic_type": "DeclarationList -> Declaration DeclarationList",
+    "lbracket": "DeclarationList -> Declaration DeclarationList",
+    "$": "DeclarationList -> ''"
+  },
+  "Declaration": {
+    "atomic_type": "Declaration -> VariableDeclaration",
+    "lbracket": "Declaration -> VariableDeclaration",
+    "kw_fn": "Declaration -> FunctionDeclaration"
+  },
+  "VariableDeclaration": {
+    "atomic_type": "VariableDeclaration -> Type AtomicDeclarationList semi_colon",
+    "lbracket": "VariableDeclaration -> Type AtomicDeclarationList semi_colon"
+  },
+  "AtomicDeclarationList": {
+    "identifier": "AtomicDeclarationList -> AtomicDeclaration comma AtomicDeclarationList",
+    "semi_colon": "AtomicDeclarationList -> ''"
+  },
+  "AtomicDeclaration": {
+    "identifier": "AtomicDeclaration -> identifier assign Expression"
+  },
+  "FunctionDeclaration": {
+    "kw_fn": "FunctionDeclaration -> kw_fn identifier lparen ArgList rparen Type lbrace StmtList rbrace"
+  },
+  "ArgList": {
+    "atomic_type": "ArgList -> Type identifier comma ArgList",
+    "lbracket": "ArgList -> Type identifier comma ArgList",
+    "rparen": "ArgList -> ''"
+  },
+  "Expression": {
+    "lparen": "Expression -> Term ExpressionRHS",
+    "int_literal": "Expression -> Term ExpressionRHS",
+    "float_literal": "Expression -> Term ExpressionRHS",
+    "str_literal": "Expression -> Term ExpressionRHS",
+    "bool_literal": "Expression -> Term ExpressionRHS",
+    "identifier": "Expression -> Term ExpressionRHS"
+  },
+  "ExpressionRHS": {
+    "bin_op": "ExpressionRHS -> bin_op Expression",
+    "comma": "ExpressionRHS -> ''",
+    "rparen": "ExpressionRHS -> ''",
+    "semi_colon": "ExpressionRHS -> ''",
+    "lbrace": "ExpressionRHS -> ''"
+  },
+  "Term": {
+    "lparen": "Term -> lparen Expression rparen",
+    "int_literal": "Term -> int_literal",
+    "float_literal": "Term -> float_literal",
+    "str_literal": "Term -> str_literal",
+    "bool_literal": "Term -> bool_literal",
+    "identifier": "Term -> IdentifierOrCallTerm"
+  },
+  "IdentifierOrCallTerm": {
+    "identifier": "IdentifierOrCallTerm -> identifier Call"
+  },
+  "Call": {
+    "lparen": "Call -> lparen FormalArgList rparen",
+    "bin_op": "Call -> ''",
+    "comma": "Call -> ''",
+    "rparen": "Call -> ''",
+    "semi_colon": "Call -> ''",
+    "lbrace": "Call -> ''"
+  },
+  "FormalArgList": {
+    "lparen": "FormalArgList -> Expression comma FormalArgList",
+    "int_literal": "FormalArgList -> Expression comma FormalArgList",
+    "float_literal": "FormalArgList -> Expression comma FormalArgList",
+    "str_literal": "FormalArgList -> Expression comma FormalArgList",
+    "bool_literal": "FormalArgList -> Expression comma FormalArgList",
+    "identifier": "FormalArgList -> Expression comma FormalArgList",
+    "rparen": "FormalArgList -> ''"
+  },
+  "StmtList": {
+    "lbrace": "StmtList -> Stmt semi_colon StmtList",
+    "atomic_type": "StmtList -> Stmt semi_colon StmtList",
+    "lbracket": "StmtList -> Stmt semi_colon StmtList",
+    "identifier": "StmtList -> Stmt semi_colon StmtList",
+    "kw_return": "StmtList -> Stmt semi_colon StmtList",
+    "lparen": "StmtList -> Stmt semi_colon StmtList",
+    "int_literal": "StmtList -> Stmt semi_colon StmtList",
+    "float_literal": "StmtList -> Stmt semi_colon StmtList",
+    "str_literal": "StmtList -> Stmt semi_colon StmtList",
+    "bool_literal": "StmtList -> Stmt semi_colon StmtList",
+    "kw_if": "StmtList -> Stmt semi_colon StmtList",
+    "kw_for": "StmtList -> Stmt semi_colon StmtList",
+    "kw_while": "StmtList -> Stmt semi_colon StmtList",
+    "rbrace": "StmtList -> ''"
+  },
+  "Stmt": {
+    "atomic_type": "Stmt -> VariableDeclaration",
+    "lbracket": "Stmt -> VariableDeclaration",
+    "identifier": "Stmt -> Assignment Stmt -> Expression",
+    "kw_if": "Stmt -> Conditional",
+    "kw_for": "Stmt -> Loop",
+    "kw_while": "Stmt -> Loop",
+    "kw_return": "Stmt -> Return",
+    "lparen": "Stmt -> Expression",
+    "int_literal": "Stmt -> Expression",
+    "float_literal": "Stmt -> Expression",
+    "str_literal": "Stmt -> Expression",
+    "bool_literal": "Stmt -> Expression",
+    "lbrace": "Stmt -> lbrace StmtList rbrace"
+  },
+  "Assignment": { "identifier": "Assignment -> identifier assign Expression" },
+  "Conditional": { "kw_if": "Conditional -> IfBlock ElifBlocks ElseBlock" },
+  "IfBlock": { "kw_if": "IfBlock -> kw_if Expression lbrace StmtList rbrace" },
+  "ElifBlocks": {
+    "kw_elif": "ElifBlocks -> ElifBlock ElifBlocks",
+    "kw_else": "ElifBlocks -> ''",
+    "semi_colon": "ElifBlocks -> ''"
+  },
+  "ElifBlock": {
+    "kw_elif": "ElifBlock -> kw_elif Expression lbrace StmtList rbrace"
+  },
+  "ElseBlock": {
+    "kw_else": "ElseBlock -> kw_else lbrace StmtList rbrace",
+    "semi_colon": "ElseBlock -> ''"
+  },
+  "Loop": { "kw_for": "Loop -> ForLoop", "kw_while": "Loop -> WhileLoop" },
+  "ForLoop": {
+    "kw_for": "ForLoop -> kw_for identifier kw_in LoopRange lbrace StmtList rbrace"
+  },
+  "LoopRange": {
+    "int_literal": "LoopRange -> int_literal range int_literal LoopStep"
+  },
+  "LoopStep": {
+    "range": "LoopStep -> range int_literal",
+    "lbrace": "LoopStep -> ''"
+  },
+  "WhileLoop": {
+    "kw_while": "WhileLoop -> kw_while Expression lbrace StmtList rbrace"
+  },
+  "Return": { "kw_return": "Return -> kw_return ReturnVariable" },
+  "ReturnVariable": {
+    "lparen": "ReturnVariable -> Expression",
+    "int_literal": "ReturnVariable -> Expression",
+    "float_literal": "ReturnVariable -> Expression",
+    "str_literal": "ReturnVariable -> Expression",
+    "bool_literal": "ReturnVariable -> Expression",
+    "identifier": "ReturnVariable -> Expression",
+    "semi_colon": "ReturnVariable -> ''"
+  },
+  "Type": {
+    "atomic_type": "Type -> atomic_type",
+    "lbracket": "Type -> lbracket int_literal rbracket Type"
+  }
+}
