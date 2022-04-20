@@ -56,6 +56,7 @@ class Term : public CFGNode {
 };
 
 class ExpressionRHS : public CFGNode {
+   public:
     ExpressionRHS(std::unique_ptr<CFGNode>&& bin_op, std::unique_ptr<CFGNode>&& expression) : CFGNode(NodeKind::EXPRESSION_RHS) {
         addChildNode(std::move(bin_op));
         addChildNode(std::move(expression));

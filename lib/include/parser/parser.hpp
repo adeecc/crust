@@ -34,7 +34,7 @@ class Parser {
     std::unique_ptr<ArgList> parseArgList();
 
     std::unique_ptr<Expression> parseExpression();
-    std::unique_ptr<Expression> parseExpressionRHS();
+    std::unique_ptr<ExpressionRHS> parseExpressionRHS();
 
     std::unique_ptr<Term> parseTerm();
     std::unique_ptr<IdOrCallTerm> parseIdOrCallTerm();
