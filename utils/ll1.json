@@ -12,13 +12,13 @@
     "$": "DeclarationList -> ''"
   },
   "Declaration": {
-    "atomic_type": "Declaration -> VariableDeclaration",
-    "lbracket": "Declaration -> VariableDeclaration",
+    "atomic_type": "Declaration -> VariableDeclaration semi_colon",
+    "lbracket": "Declaration -> VariableDeclaration semi_colon",
     "kw_fn": "Declaration -> FunctionDeclaration"
   },
   "VariableDeclaration": {
-    "atomic_type": "VariableDeclaration -> Type AtomicDeclarationList semi_colon",
-    "lbracket": "VariableDeclaration -> Type AtomicDeclarationList semi_colon"
+    "atomic_type": "VariableDeclaration -> Type AtomicDeclarationList",
+    "lbracket": "VariableDeclaration -> Type AtomicDeclarationList"
   },
   "AtomicDeclarationList": {
     "identifier": "AtomicDeclarationList -> AtomicDeclaration comma AtomicDeclarationList",
@@ -79,34 +79,34 @@
     "rparen": "FormalArgList -> ''"
   },
   "StmtList": {
-    "lbrace": "StmtList -> Stmt semi_colon StmtList",
-    "atomic_type": "StmtList -> Stmt semi_colon StmtList",
-    "lbracket": "StmtList -> Stmt semi_colon StmtList",
-    "identifier": "StmtList -> Stmt semi_colon StmtList",
-    "kw_return": "StmtList -> Stmt semi_colon StmtList",
-    "lparen": "StmtList -> Stmt semi_colon StmtList",
-    "int_literal": "StmtList -> Stmt semi_colon StmtList",
-    "float_literal": "StmtList -> Stmt semi_colon StmtList",
-    "str_literal": "StmtList -> Stmt semi_colon StmtList",
-    "bool_literal": "StmtList -> Stmt semi_colon StmtList",
-    "kw_if": "StmtList -> Stmt semi_colon StmtList",
-    "kw_for": "StmtList -> Stmt semi_colon StmtList",
-    "kw_while": "StmtList -> Stmt semi_colon StmtList",
+    "lbrace": "StmtList -> Stmt StmtList",
+    "atomic_type": "StmtList -> Stmt StmtList",
+    "lbracket": "StmtList -> Stmt StmtList",
+    "identifier": "StmtList -> Stmt StmtList",
+    "kw_return": "StmtList -> Stmt StmtList",
+    "lparen": "StmtList -> Stmt StmtList",
+    "int_literal": "StmtList -> Stmt StmtList",
+    "float_literal": "StmtList -> Stmt StmtList",
+    "str_literal": "StmtList -> Stmt StmtList",
+    "bool_literal": "StmtList -> Stmt StmtList",
+    "kw_if": "StmtList -> Stmt StmtList",
+    "kw_for": "StmtList -> Stmt StmtList",
+    "kw_while": "StmtList -> Stmt StmtList",
     "rbrace": "StmtList -> ''"
   },
   "Stmt": {
-    "atomic_type": "Stmt -> VariableDeclaration",
-    "lbracket": "Stmt -> VariableDeclaration",
-    "identifier": "Stmt -> Assignment Stmt -> Expression",
+    "atomic_type": "Stmt -> VariableDeclaration semi_colon",
+    "lbracket": "Stmt -> VariableDeclaration semi_colon",
+    "identifier": "Stmt -> Assignment semi_colon Stmt -> Expression semi_colon",
     "kw_if": "Stmt -> Conditional",
     "kw_for": "Stmt -> Loop",
     "kw_while": "Stmt -> Loop",
-    "kw_return": "Stmt -> Return",
-    "lparen": "Stmt -> Expression",
-    "int_literal": "Stmt -> Expression",
-    "float_literal": "Stmt -> Expression",
-    "str_literal": "Stmt -> Expression",
-    "bool_literal": "Stmt -> Expression",
+    "kw_return": "Stmt -> Return semi_colon",
+    "lparen": "Stmt -> Expression semi_colon",
+    "int_literal": "Stmt -> Expression semi_colon",
+    "float_literal": "Stmt -> Expression semi_colon",
+    "str_literal": "Stmt -> Expression semi_colon",
+    "bool_literal": "Stmt -> Expression semi_colon",
     "lbrace": "Stmt -> lbrace StmtList rbrace"
   },
   "Assignment": { "identifier": "Assignment -> identifier assign Expression" },
@@ -115,14 +115,40 @@
   "ElifBlocks": {
     "kw_elif": "ElifBlocks -> ElifBlock ElifBlocks",
     "kw_else": "ElifBlocks -> ''",
-    "semi_colon": "ElifBlocks -> ''"
+    "rbrace": "ElifBlocks -> ''",
+    "lbrace": "ElifBlocks -> ''",
+    "atomic_type": "ElifBlocks -> ''",
+    "lbracket": "ElifBlocks -> ''",
+    "identifier": "ElifBlocks -> ''",
+    "kw_return": "ElifBlocks -> ''",
+    "lparen": "ElifBlocks -> ''",
+    "int_literal": "ElifBlocks -> ''",
+    "float_literal": "ElifBlocks -> ''",
+    "str_literal": "ElifBlocks -> ''",
+    "bool_literal": "ElifBlocks -> ''",
+    "kw_if": "ElifBlocks -> ''",
+    "kw_for": "ElifBlocks -> ''",
+    "kw_while": "ElifBlocks -> ''"
   },
   "ElifBlock": {
     "kw_elif": "ElifBlock -> kw_elif Expression lbrace StmtList rbrace"
   },
   "ElseBlock": {
     "kw_else": "ElseBlock -> kw_else lbrace StmtList rbrace",
-    "semi_colon": "ElseBlock -> ''"
+    "rbrace": "ElseBlock -> ''",
+    "lbrace": "ElseBlock -> ''",
+    "atomic_type": "ElseBlock -> ''",
+    "lbracket": "ElseBlock -> ''",
+    "identifier": "ElseBlock -> ''",
+    "kw_return": "ElseBlock -> ''",
+    "lparen": "ElseBlock -> ''",
+    "int_literal": "ElseBlock -> ''",
+    "float_literal": "ElseBlock -> ''",
+    "str_literal": "ElseBlock -> ''",
+    "bool_literal": "ElseBlock -> ''",
+    "kw_if": "ElseBlock -> ''",
+    "kw_for": "ElseBlock -> ''",
+    "kw_while": "ElseBlock -> ''"
   },
   "Loop": { "kw_for": "Loop -> ForLoop", "kw_while": "Loop -> WhileLoop" },
   "ForLoop": {

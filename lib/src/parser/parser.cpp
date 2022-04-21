@@ -1,6 +1,7 @@
 #include <CFG/cfg.hpp>
 #include <common/errorlogger.hpp>
 #include <parser/parser.hpp>
+#include <iostream>
 
 namespace Crust {
 
@@ -8,6 +9,11 @@ void Parser::skipToNextSemiColon() {
     while (mCurrentToken != Lexer::Token::TOK_EOF and mCurrentToken != Lexer::Token::SEMI_COLON) {
         mCurrentToken = mLexer.getNextToken();
     }
+}
+
+Lexer::Token Parser::peekNextToken() {
+    Lexer lexer_copy = mLexer;
+    return lexer_copy.getNextToken();
 }
 
 std::unique_ptr<CFGNode> Parser::parseProgram(const std::string& filename) {
@@ -51,7 +57,7 @@ std::unique_ptr<ProgDecl> Parser::parseProgramDecl() {
 }
 
 std::unique_ptr<DeclList> Parser::parseDeclList() {
-    auto declList = std::make_unique<DeclList>();
+    auto declListNode = std::make_unique<DeclList>();
 
     while (mCurrentToken != Lexer::Token::TOK_EOF and mCurrentToken != Lexer::Token::KW_FN and (mCurrentToken < Lexer::Token::KW_INT_32 and mCurrentToken > Lexer::Token::KW_VOID) and (mCurrentToken != Lexer::Token::LBRACKET)) {
         ErrorLogger::printErrorAtLocation(ErrorLogger::ErrorType::EXPECTED_DECL, mLexer.GetCurrentLocation());
@@ -59,7 +65,7 @@ std::unique_ptr<DeclList> Parser::parseDeclList() {
     }
 
     auto declNode = std::make_unique<Decl>();
-    auto declListNode = std::make_unique<DeclList>();
+    auto declList = std::make_unique<DeclList>();
 
     switch (mCurrentToken) {
         case Lexer::Token::TOK_EOF:
@@ -70,9 +76,9 @@ std::unique_ptr<DeclList> Parser::parseDeclList() {
         case Lexer::Token::LBRACKET:
 
             declNode.reset(parseDecl().release());
-            declListNode.reset(parseDeclList().release());
+            declList.reset(parseDeclList().release());
 
-            declList.reset(new DeclList(std::move(declNode), std::move(declListNode)));
+            declListNode.reset(new DeclList(std::move(declNode), std::move(declList)));
             break;
 
         default:
@@ -80,7 +86,7 @@ std::unique_ptr<DeclList> Parser::parseDeclList() {
             break;
     }
 
-    return declList;
+    return declListNode;
 }
 
 std::unique_ptr<Decl> Parser::parseDecl() {
@@ -91,25 +97,17 @@ std::unique_ptr<Decl> Parser::parseDecl() {
         mCurrentToken = mLexer.getNextToken();
     }
 
-    auto varDecl = std::make_unique<VarDecl>();
-    auto fnDecl = std::make_unique<FnDecl>();
+    if (mCurrentToken == Lexer::Token::KW_FN) {
+        std::unique_ptr<Crust::FnDecl> fnDecl = parseFnDecl();
+        declNode.reset(new Decl(std::move(fnDecl)));
+    } else if (mCurrentToken == Lexer::Token::LBRACKET or (mCurrentToken >= Lexer::Token::KW_INT_32 and mCurrentToken <= Lexer::Token::KW_VOID)) {
+        std::unique_ptr<Crust::VarDecl> varDecl = parseVarDecl();
+        std::unique_ptr<Crust::Token> semi_colon = parseToken(Lexer::Token::SEMI_COLON);
 
-    switch (mCurrentToken) {
-        case Lexer::Token::KW_FN:
-            fnDecl.reset(parseFnDecl().release());
-            declNode.reset(new Decl(std::move(fnDecl)));
-            break;
-
-        case Lexer::Token::KW_INT_32... Lexer::Token::KW_VOID:
-        case Lexer::Token::LBRACKET:
-            varDecl.reset(parseVarDecl().release());
-            declNode.reset(new Decl(std::move(varDecl)));
-
-            break;
-
-        default:
-            ErrorLogger::printErrorAtLocation(ErrorLogger::ErrorType::EXPECTED_DECL, mLexer.GetCurrentLocation());
-            break;
+        declNode.reset(
+            new Decl(
+                std::move(varDecl),
+                std::move(semi_colon)));
     }
 
     return declNode;
@@ -123,26 +121,11 @@ std::unique_ptr<VarDecl> Parser::parseVarDecl() {
         mCurrentToken = mLexer.getNextToken();
     }
 
-    auto type = std::make_unique<Type>();
-    auto atomicDeclList = std::make_unique<AtomicDeclList>();
-    auto semi_colon = std::make_unique<Token>();
-
-    switch (mCurrentToken) {
-        case Lexer::Token::KW_INT_32... Lexer::Token::KW_VOID:
-        case Lexer::Token::LBRACKET:
-            type.reset(parseType().release());
-            atomicDeclList.reset(parseAtomicDeclList().release());
-            semi_colon.reset(parseToken(Lexer::Token::SEMI_COLON).release());
-
-            varDeclNode.reset(new VarDecl(std::move(type),
-                                          std::move(atomicDeclList),
-                                          std::move(semi_colon)));
-
-            break;
-
-        default:
-            ErrorLogger::printErrorAtLocation(ErrorLogger::ErrorType::EXPECTED_DECL, mLexer.GetCurrentLocation());
-            break;
+    if (mCurrentToken == Lexer::Token::LBRACKET or (mCurrentToken >= Lexer::Token::KW_INT_32 and mCurrentToken <= Lexer::Token::KW_VOID)) {
+        std::unique_ptr<Crust::Type> type = parseType();
+        std::unique_ptr<Crust::AtomicDeclList> atomicDeclList = parseAtomicDeclList();
+        varDeclNode.reset(new VarDecl(std::move(type),
+                                      std::move(atomicDeclList)));
     }
 
     return varDeclNode;
@@ -271,7 +254,6 @@ std::unique_ptr<Expression> Parser::parseExpression() {
         mCurrentToken = mLexer.getNextToken();
     }
 
-    // TODO: If condition
     if (mCurrentToken == Lexer::Token::LPAREN or
         (mCurrentToken >= Lexer::Token::INT_LITERAL and mCurrentToken <= Lexer::Token::STR_LITERAL) or
         (mCurrentToken >= Lexer::Token::KW_TRUE and mCurrentToken <= Lexer::Token::KW_FALSE) or
@@ -279,16 +261,17 @@ std::unique_ptr<Expression> Parser::parseExpression() {
         std::unique_ptr<Term> term = parseTerm();
         std::unique_ptr<ExpressionRHS> expressionRHS = parseExpressionRHS();
 
-        expressionNode.reset(new Expression(
-            std::move(term),
-            std::move(expressionRHS)));
+        expressionNode.reset(
+            new Expression(
+                std::move(term),
+                std::move(expressionRHS)));
     }
 
     return expressionNode;
 }
 
 std::unique_ptr<ExpressionRHS> Parser::parseExpressionRHS() {
-    auto expressionRHSNode = std::unique_ptr<ExpressionRHS>();
+    auto expressionRHSNode = std::make_unique<ExpressionRHS>();
 
     while (mCurrentToken != Lexer::Token::TOK_EOF and
            (mCurrentToken < Lexer::Token::OP_PLUS and mCurrentToken > Lexer::Token::OP_LT) and
@@ -346,8 +329,7 @@ std::unique_ptr<Term> Parser::parseTerm() {
         mCurrentToken == Lexer::Token::KW_FALSE) {
         std::unique_ptr<Token> literal = parseToken(mCurrentToken);
 
-        termNode.reset(new Term(
-            std::move(literal)));
+        termNode.reset(new Term(std::move(literal)));
     } else if (mCurrentToken == Lexer::Token::IDENTIFIER) {
         std::unique_ptr<IdOrCallTerm> idOrCallTerm = parseIdOrCallTerm();
 
@@ -482,12 +464,10 @@ std::unique_ptr<StmtList> Parser::parseStmtList() {
         mCurrentToken == Lexer::Token::KW_FOR or
         mCurrentToken == Lexer::Token::KW_WHILE) {
         std::unique_ptr<Stmt> stmt = parseStmt();
-        std::unique_ptr<Token> semi_colon = parseToken(Lexer::Token::SEMI_COLON);
         std::unique_ptr<StmtList> stmtList = parseStmtList();
 
         stmtListNode.reset(new StmtList(
             std::move(stmt),
-            std::move(semi_colon),
             std::move(stmtList)));
     }
 
@@ -523,9 +503,25 @@ std::unique_ptr<Stmt> Parser::parseStmt() {
     if ((mCurrentToken >= Lexer::Token::KW_INT_32 and mCurrentToken <= Lexer::Token::KW_VOID) or
         mCurrentToken == Lexer::Token::LBRACKET) {
         std::unique_ptr<VarDecl> vardecl = parseVarDecl();
+        std::unique_ptr<Token> semi_colon = parseToken(Lexer::Token::SEMI_COLON);
 
         stmtNode.reset(new Stmt(
-            std::move(vardecl)));
+            std::move(vardecl),
+            std::move(semi_colon)));
+    }
+
+    else if (mCurrentToken == Lexer::Token::IDENTIFIER) {
+        if (peekNextToken() == Lexer::Token::ASSIGN) {
+            std::unique_ptr<AssignmentStmt> assignment_stmt = parseAssignmentStmt();
+            std::unique_ptr<Token> semi_colon = parseToken(Lexer::Token::SEMI_COLON);
+
+            stmtNode.reset(new Stmt(std::move(assignment_stmt), std::move(semi_colon)));
+        } else {
+            std::unique_ptr<Expression> expression = parseExpression();
+            std::unique_ptr<Token> semi_colon = parseToken(Lexer::Token::SEMI_COLON);
+
+            stmtNode.reset(new Stmt(std::move(expression), std::move(semi_colon)));
+        }
     }
 
     else if (mCurrentToken == Lexer::Token::KW_IF) {
@@ -533,24 +529,34 @@ std::unique_ptr<Stmt> Parser::parseStmt() {
 
         stmtNode.reset(new Stmt(
             std::move(condn)));
-    } else if (mCurrentToken == Lexer::Token::KW_FOR and
-               mCurrentToken == Lexer::Token::KW_WHILE) {
+    }
+
+    else if (mCurrentToken == Lexer::Token::KW_FOR or
+             mCurrentToken == Lexer::Token::KW_WHILE) {
         std::unique_ptr<LoopStmt> loop = parseLoopStmt();
         stmtNode.reset(new Stmt(
             std::move(loop)));
-    } else if (mCurrentToken == Lexer::Token::KW_RETURN) {
+    }
+
+    else if (mCurrentToken == Lexer::Token::KW_RETURN) {
         std::unique_ptr<ReturnStmt> returnStmt = parseReturnStmt();
+        std::unique_ptr<Token> semi_colon = parseToken(Lexer::Token::SEMI_COLON);
+
         stmtNode.reset(new Stmt(
-            std::move(returnStmt)));
-    } else if (mCurrentToken == Lexer::Token::LPAREN or
-               mCurrentToken == Lexer::Token::INT_LITERAL or
-               mCurrentToken == Lexer::Token::FLOAT_LITERAL or
-               mCurrentToken == Lexer::Token::STR_LITERAL or
-               mCurrentToken == Lexer::Token::KW_TRUE or
-               mCurrentToken == Lexer::Token::KW_FALSE) {
+            std::move(returnStmt), std::move(semi_colon)));
+    }
+
+    else if (mCurrentToken == Lexer::Token::LPAREN or
+             mCurrentToken == Lexer::Token::INT_LITERAL or
+             mCurrentToken == Lexer::Token::FLOAT_LITERAL or
+             mCurrentToken == Lexer::Token::STR_LITERAL or
+             mCurrentToken == Lexer::Token::KW_TRUE or
+             mCurrentToken == Lexer::Token::KW_FALSE) {
         std::unique_ptr<Expression> exp = parseExpression();
+        std::unique_ptr<Token> semi_colon = parseToken(Lexer::Token::SEMI_COLON);
+
         stmtNode.reset(new Stmt(
-            std::move(exp)));
+            std::move(exp), std::move(semi_colon)));
     } else if (mCurrentToken == Lexer::Token::LBRACE) {
         std::unique_ptr<Token> lbrace = parseToken(Lexer::Token::LBRACE);
         std::unique_ptr<StmtList> stmtList = parseStmtList();
@@ -690,8 +696,22 @@ std::unique_ptr<ElifBlocks> Parser::parseElifBlocks() {
     while (mCurrentToken != Lexer::Token::TOK_EOF and
            mCurrentToken != Lexer::Token::KW_ELIF and
            mCurrentToken != Lexer::Token::KW_ELSE and
-           mCurrentToken != Lexer::Token::SEMI_COLON) {
-        ErrorLogger::printErrorAtLocation(ErrorLogger::ErrorType::VAR_MISSING_IDENTIFIER, mLexer.GetCurrentLocation());
+           mCurrentToken != Lexer::Token::RBRACE and
+           mCurrentToken != Lexer::Token::LBRACE and
+           (mCurrentToken < Lexer::Token::KW_INT_32 and mCurrentToken > Lexer::Token::KW_VOID) and
+           mCurrentToken != Lexer::Token::LBRACKET and
+           mCurrentToken != Lexer::Token::IDENTIFIER and
+           mCurrentToken != Lexer::Token::KW_RETURN and
+           mCurrentToken != Lexer::Token::LPAREN and
+           mCurrentToken != Lexer::Token::INT_LITERAL and
+           mCurrentToken != Lexer::Token::FLOAT_LITERAL and
+           mCurrentToken != Lexer::Token::STR_LITERAL and
+           mCurrentToken != Lexer::Token::KW_TRUE and
+           mCurrentToken != Lexer::Token::KW_FALSE and
+           mCurrentToken != Lexer::Token::KW_IF and
+           mCurrentToken != Lexer::Token::KW_FOR and
+           mCurrentToken != Lexer::Token::KW_WHILE) {
+        ErrorLogger::printErrorAtLocation(ErrorLogger::ErrorType::SYNTAX_MISSING_RBRACE, mLexer.GetCurrentLocation());
         mCurrentToken = mLexer.getNextToken();
     }
 
@@ -702,8 +722,7 @@ std::unique_ptr<ElifBlocks> Parser::parseElifBlocks() {
         elifBlocksNode.reset(new ElifBlocks(
             std::move(elifBlock),
             std::move(elifBlocks)));
-    } else if (mCurrentToken == Lexer::Token::KW_ELSE or
-               mCurrentToken == Lexer::Token::SEMI_COLON) {
+    } else {
         // epsilon do nothing
     }
 
@@ -742,7 +761,22 @@ std::unique_ptr<ElseBlock> Parser::parseElseBlock() {
 
     while (mCurrentToken != Lexer::Token::TOK_EOF and
            mCurrentToken != Lexer::Token::KW_ELSE and
-           mCurrentToken != Lexer::Token::SEMI_COLON) {
+           mCurrentToken != Lexer::Token::KW_ELSE and
+           mCurrentToken != Lexer::Token::RBRACE and
+           mCurrentToken != Lexer::Token::LBRACE and
+           (mCurrentToken < Lexer::Token::KW_INT_32 and mCurrentToken > Lexer::Token::KW_VOID) and
+           mCurrentToken != Lexer::Token::LBRACKET and
+           mCurrentToken != Lexer::Token::IDENTIFIER and
+           mCurrentToken != Lexer::Token::KW_RETURN and
+           mCurrentToken != Lexer::Token::LPAREN and
+           mCurrentToken != Lexer::Token::INT_LITERAL and
+           mCurrentToken != Lexer::Token::FLOAT_LITERAL and
+           mCurrentToken != Lexer::Token::STR_LITERAL and
+           mCurrentToken != Lexer::Token::KW_TRUE and
+           mCurrentToken != Lexer::Token::KW_FALSE and
+           mCurrentToken != Lexer::Token::KW_IF and
+           mCurrentToken != Lexer::Token::KW_FOR and
+           mCurrentToken != Lexer::Token::KW_WHILE) {
         ErrorLogger::printErrorAtLocation(ErrorLogger::ErrorType::VAR_MISSING_IDENTIFIER, mLexer.GetCurrentLocation());
         mCurrentToken = mLexer.getNextToken();
     }
@@ -758,7 +792,7 @@ std::unique_ptr<ElseBlock> Parser::parseElseBlock() {
             std::move(lbrace),
             std::move(stmtList),
             std::move(rbrace)));
-    } else if (mCurrentToken == Lexer::Token::SEMI_COLON) {
+    } else {
         // epsilon do nothing
     }
 
@@ -911,7 +945,28 @@ std::unique_ptr<ReturnVar> Parser::parseReturnVar() {
 }
 
 std::unique_ptr<Token> Parser::parseToken(Lexer::Token token) {
-    auto parent = std::make_unique<Token>(token);
+    std::unique_ptr<Crust::Token> parent;
+
+    if (mCurrentToken != token) {
+        std::cout << "Unknown Error\n"; // FIXME: Use ErrorLogger
+    }
+
+    else if (token == Lexer::Token::IDENTIFIER or token == Lexer::Token::STR_LITERAL) {
+        parent = std::make_unique<Token>(token, mLexer.getCurrentStr());
+    }
+
+    else if (token == Lexer::Token::INT_LITERAL) {
+        parent = std::make_unique<Token>(token, mLexer.getCurrentInt());
+    }
+
+    else if (token == Lexer::Token::FLOAT_LITERAL) {
+        parent = std::make_unique<Token>(token, mLexer.getCurrentFloat());
+    }
+
+    else {
+        parent = std::make_unique<Token>(token);
+    }
+
     mCurrentToken = mLexer.getNextToken();
     return parent;
 }
@@ -930,7 +985,7 @@ std::unique_ptr<Type> Parser::parseType() {
     } else if (mCurrentToken == Lexer::Token::LBRACKET) {
         std::unique_ptr<Token> lbracket = parseToken(Lexer::Token::LBRACKET);
         std::unique_ptr<Token> int_literal = parseToken(Lexer::Token::INT_LITERAL);
-        std::unique_ptr<Token> rbracket = parseToken(Lexer::Token::LBRACKET);
+        std::unique_ptr<Token> rbracket = parseToken(Lexer::Token::RBRACKET);
         std::unique_ptr<Type> type = parseType();
 
         typeNode.reset(new Type(std::move(lbracket),

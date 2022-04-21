@@ -3,9 +3,12 @@
 #include <assert.h>
 
 #include <common/sourceloc.hpp>
+#include <iostream>
 #include <list>
 #include <memory>
 #include <ostream>
+#include <string>
+#include <utils/uid.hpp>
 #include <vector>
 
 namespace Crust {
@@ -65,7 +68,9 @@ class CFGNode {
     };
 
    public:
-    explicit CFGNode(NodeKind kind = NodeKind::ERROR) : mKind{kind}, mName{" "} {}
+    // explicit CFGNode(NodeKind kind = NodeKind::ERROR) : mUid{UID::generate()}, mKind{kind}, mName{" "} {}
+    explicit CFGNode(NodeKind kind = NodeKind::ERROR, std::string name = "") : mUid{UID::generate()}, mKind{kind}, mName{name} {}
+
     virtual ~CFGNode() = default;
 
     CFGNode(const CFGNode&) = default;
@@ -74,13 +79,26 @@ class CFGNode {
     CFGNode& operator=(CFGNode&&) = default;
 
    public:
+    uint64_t getUID() const { return mUid; }
     NodeKind getKind() const { return mKind; }  // Why not const?
     const std::string& getName() const { return mName; }
     const ChildrenNode& getChildrenNodes() const { return mChildren; }
     const SourceLocation& getSourceLocation() const { return mSrcLoc; }
 
-    //    TODO: Verify that move is working
     void addChildNode(std::unique_ptr<CFGNode>&& node) { mChildren.push_back(std::move(node)); }
+
+    // TODO: Write to file directly instead of stdout?
+    void generateDotFile() {
+        std::cout << "digraph CFG {\n";
+        std::cout << "\tgraph [ dpi = 300 ];\n";
+        std::cout << "\tfontname=\"Helvetica,Arial,sans-serif\"\n";
+        std::cout << "\tnode [fontname=\"Helvetica,Arial,sans-serif\"]\n";
+        std::cout << "\tedge [fontname=\"Helvetica,Arial,sans-serif\"]\n";
+        std::cout << "\tnode [shape = circle];\n";
+
+        _generateDotFileHelper();
+        std::cout << "}\n";
+    }
 
     friend std::ostream& operator<<(std::ostream& stream, const NodeKind& kind) {
         switch (kind) {
@@ -179,7 +197,7 @@ class CFGNode {
                 stream << "TYPE";
                 break;
             case NodeKind::TOKEN:
-                stream << "TOKEN: ";
+                stream << "TOKEN";
                 break;
 
             case NodeKind::ERROR:
@@ -195,11 +213,25 @@ class CFGNode {
 
     friend std::ostream& operator<<(std::ostream& stream, const CFGNode& node) {
         static int indentLevel = 0;
-        stream << node.getKind() << "(\n";
+
+        stream << node.getName();
+
+        if (node.getKind() == CFGNode::NodeKind::TOKEN) {
+            stream << "\n";
+            return stream;
+        }
+
+        stream << "(\n";
 
         for (const auto& child : node.getChildrenNodes()) {
             indentLevel += 2;
             for (int i = 0; i < indentLevel; ++i) stream << " ";
+            if (!child) {
+#ifndef NDEBUG
+                stream << "FATAL ERROR: Somethign went wrong when parsing children of node: " << node.getKind() << ". \n";
+#endif
+                continue;
+            }
             stream << *child;
             indentLevel -= 2;
         }
@@ -217,9 +249,21 @@ class CFGNode {
     }
 
    protected:
+    uint64_t mUid;
     NodeKind mKind;
     std::string mName;
     ChildrenNode mChildren;
     SourceLocation mSrcLoc;
+
+   protected:
+    void _generateDotFileHelper() {
+        for (const auto& child : getChildrenNodes()) {
+            std::cout << getName() << "_" << getUID() << "->" << child->getName() << "_" << child->getUID() << "\n";
+        }
+
+        for (const auto& child : getChildrenNodes()) {
+            child->_generateDotFileHelper();
+        }
+    }
 };
 }  // namespace Crust

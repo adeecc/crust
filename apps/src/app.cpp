@@ -13,5 +13,7 @@ int main() {
 
     std::cout << *res;
 
+    // res->generateDotFile();
+
     return 0;
 }

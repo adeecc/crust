@@ -7,6 +7,72 @@
 
 using namespace Crust;
 
+const std::array<std::string, (size_t)Lexer::Token::UNKNOWN + 1> Lexer::token_to_str = {
+    "KW_INT_32",
+    "KW_INT_64",
+    "KW_UINT_32",
+    "KW_UINT_64",
+    "KW_FLOAT_32",
+    "KW_FLOAT_64",
+    "KW_STRING",
+    "KW_BOOL",
+    "KW_VOID",
+    "KW_TRUE",
+    "KW_FALSE",
+    "KW_LET",
+    "KW_IF",
+    "KW_ELIF",
+    "KW_ELSE",
+    "KW_FOR",
+    "KW_IN",
+    "KW_WHILE",
+    "KW_FN",
+    "KW_RETURN",
+
+    "INT_LITERAL",
+    "FLOAT_LITERAL",
+    "STR_LITERAL",
+
+    "IDENTIFIER",
+
+    "OP_PLUS",
+    "OP_MINUS",
+    "OP_MULT",
+    "OP_DIV",
+    "OP_MOD",
+    "OP_AND",
+    "OP_OR",
+    "OP_GT",
+    "OP_GE",
+    "OP_EQ",
+    "OP_NE",
+    "OP_LE",
+    "OP_LT",
+
+    "DOT",
+    "SEMI_COLON",
+    "COLON",
+    "COMMA",
+    "AMP",
+    "RANGE",
+    "ASSIGN",
+    "NAMESPACE",
+    "LBRACE",
+    "RBRACE",
+    "LBRACKET",
+    "RBRACKET",
+    "LPAREN",
+    "RPAREN",
+
+    "COMMENT",
+
+    "TOK_SOF",
+
+    "TOK_EOF",
+
+    "UNKNOWN",
+};
+
 bool Lexer::init(const std::string& filename) {
     std::ifstream stream(filename);
     if (stream) {
@@ -215,7 +281,7 @@ Lexer::Token Lexer::getNextToken() {
     }
 
 #ifndef NDEBUG
-    std::cout << "Returning Token: " << (int)current << "\n";
+    std::cout << "Returning Token: " << Lexer::token_to_str[(size_t)current] << "\n";
 #endif
 
     return current;

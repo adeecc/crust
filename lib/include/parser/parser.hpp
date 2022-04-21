@@ -17,8 +17,10 @@ class Parser {
 
     std::unique_ptr<CFGNode> parseProgram(const std::string& filename);
 
+
    private:
     void skipToNextSemiColon();
+    Lexer::Token peekNextToken();
 
    private:
     std::unique_ptr<ProgDecl> parseProgramDecl();

@@ -1,4 +1,5 @@
 #pragma once
+#include <array>
 #include <common/sourceloc.hpp>
 #include <string>
 
@@ -16,7 +17,7 @@ class Lexer {
    public:
     enum class Token : unsigned int {
         // Datatypes
-        KW_INT_32 = 100,
+        KW_INT_32 = 0,
         KW_INT_64,
         KW_UINT_32,
         KW_UINT_64,
@@ -97,6 +98,8 @@ class Lexer {
         UNKNOWN
     };
 
+    const static std::array<std::string, (size_t)Token::UNKNOWN + 1> token_to_str;
+
     Lexer()
         : mCurrentInt{0}, mCurrentFloat{0.0f} {};
 
@@ -104,7 +107,6 @@ class Lexer {
 
     Token getNextTokenAndComment();
     Token getNextToken();
-
 
     //  Common::Type GetCurrentType() const { return mCurrentType; }
 
@@ -119,4 +121,5 @@ class Lexer {
     Token tokenizeCurrentStr();
     char advance();
 };
+
 }  // namespace Crust
