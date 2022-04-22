@@ -544,92 +544,105 @@
               cols="20"
               onchange="grammarChanged();"
             >
-            ProgDeclaration -> DeclarationList
-
-DeclarationList -> Declaration DeclarationList
-DeclarationList -> ''
-
-Declaration -> VariableDeclaration semi_colon
-Declaration -> FunctionDeclaration
-
-VariableDeclaration -> Type AtomicDeclarationList 
-
-AtomicDeclarationList -> AtomicDeclaration comma AtomicDeclarationList
-AtomicDeclarationList -> ''
-
-AtomicDeclaration -> identifier assign Expression
-
-FunctionDeclaration -> kw_fn identifier lparen ArgList rparen Type lbrace StmtList rbrace
-
-ArgList -> Type identifier comma ArgList
-ArgList -> ''
-
-Expression -> Term ExpressionRHS
-
-ExpressionRHS -> bin_op Expression
-ExpressionRHS -> ''
-
-Term -> lparen Expression rparen
-Term -> FloatTerm
-Term -> op_minus FloatTerm
-Term -> str_literal
-Term -> bool_literal
-
-FloatTerm -> int_literal
-FloatTerm -> float_literal
-
-Term -> IdentifierOrCallTerm
-IdentifierOrCallTerm -> identifier Call 
-Call -> lparen FormalArgList rparen
-Call -> ''
-
-FormalArgList -> Expression comma FormalArgList
-FormalArgList -> ''
-
-
-StmtList -> Stmt StmtList
-StmtList -> ''
-
-Stmt -> VariableDeclaration semi_colon
-Stmt -> Assignment semi_colon
-Stmt -> Conditional
-Stmt -> Loop
-Stmt -> Return semi_colon
-Stmt -> Expression semi_colon
-Stmt -> lbrace StmtList rbrace
-
-
-Assignment -> identifier assign Expression
-
-Conditional -> IfBlock ElifBlocks ElseBlock
-
-IfBlock -> kw_if Expression lbrace StmtList rbrace
-
-ElifBlocks -> ElifBlock ElifBlocks
-ElifBlocks -> ''
-
-ElifBlock -> kw_elif Expression lbrace StmtList rbrace
-
-ElseBlock -> kw_else lbrace StmtList rbrace
-ElseBlock -> ''
-
-Loop -> ForLoop
-Loop -> WhileLoop
-
-ForLoop -> kw_for identifier kw_in LoopRange lbrace StmtList rbrace
-
-LoopRange -> int_literal range int_literal LoopStep
-LoopStep -> range int_literal
-LoopStep -> ''
-
-WhileLoop -> kw_while Expression lbrace StmtList rbrace
-
-Return -> kw_return ReturnVariable
-ReturnVariable -> Expression
-ReturnVariable -> ''
-
-Type -> atomic_type
-Type -> lbracket int_literal rbracket Type
+            # Array subscripting
+            # Add assignments without comma?
+            # Parameters without being followed by a comma
+            # negative numbers
+            # atleast variables in for loops
+            
+            ProgDecl -> DeclList
+            
+            DeclList -> Decl DeclList
+            DeclList -> ''
+            
+            Decl -> VarDecl semi_colon
+            Decl -> FnDecl
+            
+            VarDecl -> Type VarDeclList
+            VarDeclList -> identifier VarDeclList_
+            
+            VarDeclList_ -> comma VarDeclList
+            VarDeclList_ -> ''
+            
+            FnDecl -> kw_fn identifier lparen FnParamList rparen Type Segment
+            
+            FnParamList -> fnParam FnParamList_
+            FnParamList -> ''
+            
+            fnParam -> Type identifier
+            
+            FnParamList_ -> comma FnParamList
+            FnParamList_ -> ''
+            
+            Expression -> Term ExpressionRHS
+            ExpressionRHS -> bin_op Expression
+            ExpressionRHS -> ''
+            
+            Term -> lparen Expression rparen
+            Term -> op_minus FloatTerm
+            Term -> FloatTerm
+            Term -> bool_literal
+            Term -> str_literal
+            Term -> identifier
+            Term -> ArraySubscript
+            Term -> Call
+            
+            FloatTerm -> float_literal
+            FloatTerm -> int_literal
+            
+            ArraySubscript -> identifier lbracket Expression rbracket
+            Call -> identifier lparen CallParamList rparen
+            
+            CallParamList -> Expression CallParamList_
+            CallParamList -> ''
+            
+            CallParamList_ -> comma CallParamList
+            CallParamList_ -> ''
+            
+            StmtList -> Stmt StmtList
+            StmtList -> ''
+            
+            Stmt -> Segment
+            Stmt -> ConditionalStmt
+            Stmt -> LoopStmt
+            
+            Stmt -> VarDecl semi_colon
+            Stmt -> ReturnStmt semi_colon
+            Stmt -> AssignmentStmt semi_colon
+            Stmt -> Expression semi_colon
+            
+            ConditionalStmt -> IfBlock ElifBlocks ElseBlock
+            
+            IfBlock -> kw_if Expression Segment
+            
+            ElifBlocks -> ElifBlock ElifBlocks
+            ElifBlocks -> ''
+            
+            ElifBlock -> kw_elif Expression Segment
+            
+            ElseBlock -> kw_else Segment
+            ElseBlock -> ''
+            
+            LoopStmt -> ForLoop
+            LoopStmt -> WhileLoop
+            
+            ForLoop -> kw_for identifier kw_in LoopRange Segment
+            
+            LoopRange -> Expression range Expression LoopStep
+            LoopStep -> range Expression
+            LoopStep -> ''
+            
+            WhileLoop -> kw_while Expression Segment
+            
+            ReturnStmt -> kw_return ReturnVar
+            ReturnVar -> Expression
+            ReturnVar -> ''
+            
+            AssignmentStmt -> identifier assign Expression
+            
+            Segment -> lbrace StmtList rbrace
+            Type -> atomic_type
+            Type -> lbracket int_literal rbracket Type
     </textarea
             >
           </td>

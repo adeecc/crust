@@ -1,179 +1,204 @@
 {
-  "ProgDeclaration": {
-    "$": "ProgDeclaration -> DeclarationList",
-    "kw_fn": "ProgDeclaration -> DeclarationList",
-    "atomic_type": "ProgDeclaration -> DeclarationList",
-    "lbracket": "ProgDeclaration -> DeclarationList"
+  "ProgDecl": {
+    "kw_fn": "ProgDecl -> DeclList",
+    "atomic_type": "ProgDecl -> DeclList",
+    "lbracket": "ProgDecl -> DeclList"
   },
-  "DeclarationList": {
-    "kw_fn": "DeclarationList -> Declaration DeclarationList",
-    "atomic_type": "DeclarationList -> Declaration DeclarationList",
-    "lbracket": "DeclarationList -> Declaration DeclarationList",
-    "$": "DeclarationList -> ''"
+  "DeclList": {
+    "kw_fn": "DeclList -> Decl DeclList",
+    "atomic_type": "DeclList -> Decl DeclList",
+    "lbracket": "DeclList -> Decl DeclList"
   },
-  "Declaration": {
-    "atomic_type": "Declaration -> VariableDeclaration semi_colon",
-    "lbracket": "Declaration -> VariableDeclaration semi_colon",
-    "kw_fn": "Declaration -> FunctionDeclaration"
+  "Decl": {
+    "atomic_type": "Decl -> VarDecl semi_colon",
+    "lbracket": "Decl -> VarDecl semi_colon",
+    "kw_fn": "Decl -> FnDecl"
   },
-  "VariableDeclaration": {
-    "atomic_type": "VariableDeclaration -> Type AtomicDeclarationList",
-    "lbracket": "VariableDeclaration -> Type AtomicDeclarationList"
+  "VarDecl": {
+    "atomic_type": "VarDecl -> Type VarDeclList",
+    "lbracket": "VarDecl -> Type VarDeclList"
   },
-  "AtomicDeclarationList": {
-    "identifier": "AtomicDeclarationList -> AtomicDeclaration comma AtomicDeclarationList",
-    "semi_colon": "AtomicDeclarationList -> ''"
+  "VarDeclList": { "identifier": "VarDeclList -> identifier VarDeclList_" },
+  "VarDeclList_": {
+    "comma": "VarDeclList_ -> comma VarDeclList",
+    "semi_colon": "VarDeclList_ -> ''"
   },
-  "AtomicDeclaration": {
-    "identifier": "AtomicDeclaration -> identifier assign Expression"
+  "FnDecl": {
+    "kw_fn": "FnDecl -> kw_fn identifier lparen FnParamList rparen Type Segment"
   },
-  "FunctionDeclaration": {
-    "kw_fn": "FunctionDeclaration -> kw_fn identifier lparen ArgList rparen Type lbrace StmtList rbrace"
+  "FnParamList": {
+    "atomic_type": "FnParamList -> fnParam FnParamList_",
+    "lbracket": "FnParamList -> fnParam FnParamList_",
+    "rparen": "FnParamList -> ''"
   },
-  "ArgList": {
-    "atomic_type": "ArgList -> Type identifier comma ArgList",
-    "lbracket": "ArgList -> Type identifier comma ArgList",
-    "rparen": "ArgList -> ''"
+  "fnParam": {
+    "atomic_type": "fnParam -> Type identifier",
+    "lbracket": "fnParam -> Type identifier"
+  },
+  "FnParamList_": {
+    "comma": "FnParamList_ -> comma FnParamList",
+    "rparen": "FnParamList_ -> ''"
   },
   "Expression": {
     "lparen": "Expression -> Term ExpressionRHS",
-    "int_literal": "Expression -> Term ExpressionRHS",
-    "float_literal": "Expression -> Term ExpressionRHS",
-    "str_literal": "Expression -> Term ExpressionRHS",
+    "op_minus": "Expression -> Term ExpressionRHS",
     "bool_literal": "Expression -> Term ExpressionRHS",
-    "identifier": "Expression -> Term ExpressionRHS"
+    "str_literal": "Expression -> Term ExpressionRHS",
+    "identifier": "Expression -> Term ExpressionRHS",
+    "float_literal": "Expression -> Term ExpressionRHS",
+    "int_literal": "Expression -> Term ExpressionRHS"
   },
   "ExpressionRHS": {
     "bin_op": "ExpressionRHS -> bin_op Expression",
-    "comma": "ExpressionRHS -> ''",
     "rparen": "ExpressionRHS -> ''",
+    "rbracket": "ExpressionRHS -> ''",
+    "comma": "ExpressionRHS -> ''",
     "semi_colon": "ExpressionRHS -> ''",
-    "lbrace": "ExpressionRHS -> ''"
+    "lbrace": "ExpressionRHS -> ''",
+    "range": "ExpressionRHS -> ''"
   },
   "Term": {
     "lparen": "Term -> lparen Expression rparen",
-    "int_literal": "Term -> int_literal",
-    "float_literal": "Term -> float_literal",
-    "str_literal": "Term -> str_literal",
+    "op_minus": "Term -> op_minus FloatTerm",
+    "float_literal": "Term -> FloatTerm",
+    "int_literal": "Term -> FloatTerm",
     "bool_literal": "Term -> bool_literal",
-    "identifier": "Term -> IdentifierOrCallTerm"
+    "str_literal": "Term -> str_literal",
+    "identifier": "Term -> identifier Term -> ArraySubscript Term -> Call"
   },
-  "IdentifierOrCallTerm": {
-    "identifier": "IdentifierOrCallTerm -> identifier Call"
+  "FloatTerm": {
+    "float_literal": "FloatTerm -> float_literal",
+    "int_literal": "FloatTerm -> int_literal"
   },
-  "Call": {
-    "lparen": "Call -> lparen FormalArgList rparen",
-    "bin_op": "Call -> ''",
-    "comma": "Call -> ''",
-    "rparen": "Call -> ''",
-    "semi_colon": "Call -> ''",
-    "lbrace": "Call -> ''"
+  "ArraySubscript": {
+    "identifier": "ArraySubscript -> identifier lbracket Expression rbracket"
   },
-  "FormalArgList": {
-    "lparen": "FormalArgList -> Expression comma FormalArgList",
-    "int_literal": "FormalArgList -> Expression comma FormalArgList",
-    "float_literal": "FormalArgList -> Expression comma FormalArgList",
-    "str_literal": "FormalArgList -> Expression comma FormalArgList",
-    "bool_literal": "FormalArgList -> Expression comma FormalArgList",
-    "identifier": "FormalArgList -> Expression comma FormalArgList",
-    "rparen": "FormalArgList -> ''"
+  "Call": { "identifier": "Call -> identifier lparen CallParamList rparen" },
+  "CallParamList": {
+    "lparen": "CallParamList -> Expression CallParamList_",
+    "op_minus": "CallParamList -> Expression CallParamList_",
+    "bool_literal": "CallParamList -> Expression CallParamList_",
+    "str_literal": "CallParamList -> Expression CallParamList_",
+    "identifier": "CallParamList -> Expression CallParamList_",
+    "float_literal": "CallParamList -> Expression CallParamList_",
+    "int_literal": "CallParamList -> Expression CallParamList_",
+    "rparen": "CallParamList -> ''"
+  },
+  "CallParamList_": {
+    "comma": "CallParamList_ -> comma CallParamList",
+    "rparen": "CallParamList_ -> ''"
   },
   "StmtList": {
     "lbrace": "StmtList -> Stmt StmtList",
     "atomic_type": "StmtList -> Stmt StmtList",
     "lbracket": "StmtList -> Stmt StmtList",
-    "identifier": "StmtList -> Stmt StmtList",
     "kw_return": "StmtList -> Stmt StmtList",
+    "identifier": "StmtList -> Stmt StmtList",
     "lparen": "StmtList -> Stmt StmtList",
-    "int_literal": "StmtList -> Stmt StmtList",
-    "float_literal": "StmtList -> Stmt StmtList",
-    "str_literal": "StmtList -> Stmt StmtList",
+    "op_minus": "StmtList -> Stmt StmtList",
     "bool_literal": "StmtList -> Stmt StmtList",
+    "str_literal": "StmtList -> Stmt StmtList",
     "kw_if": "StmtList -> Stmt StmtList",
     "kw_for": "StmtList -> Stmt StmtList",
     "kw_while": "StmtList -> Stmt StmtList",
+    "float_literal": "StmtList -> Stmt StmtList",
+    "int_literal": "StmtList -> Stmt StmtList",
     "rbrace": "StmtList -> ''"
   },
   "Stmt": {
-    "atomic_type": "Stmt -> VariableDeclaration semi_colon",
-    "lbracket": "Stmt -> VariableDeclaration semi_colon",
-    "identifier": "Stmt -> Assignment semi_colon Stmt -> Expression semi_colon",
-    "kw_if": "Stmt -> Conditional",
-    "kw_for": "Stmt -> Loop",
-    "kw_while": "Stmt -> Loop",
-    "kw_return": "Stmt -> Return semi_colon",
+    "lbrace": "Stmt -> Segment",
+    "kw_if": "Stmt -> ConditionalStmt",
+    "kw_for": "Stmt -> LoopStmt",
+    "kw_while": "Stmt -> LoopStmt",
+    "atomic_type": "Stmt -> VarDecl semi_colon",
+    "lbracket": "Stmt -> VarDecl semi_colon",
+    "kw_return": "Stmt -> ReturnStmt semi_colon",
+    "identifier": "Stmt -> AssignmentStmt semi_colon Stmt -> Expression semi_colon",
     "lparen": "Stmt -> Expression semi_colon",
-    "int_literal": "Stmt -> Expression semi_colon",
-    "float_literal": "Stmt -> Expression semi_colon",
-    "str_literal": "Stmt -> Expression semi_colon",
+    "op_minus": "Stmt -> Expression semi_colon",
     "bool_literal": "Stmt -> Expression semi_colon",
-    "lbrace": "Stmt -> lbrace StmtList rbrace"
+    "str_literal": "Stmt -> Expression semi_colon",
+    "float_literal": "Stmt -> Expression semi_colon",
+    "int_literal": "Stmt -> Expression semi_colon"
   },
-  "Assignment": { "identifier": "Assignment -> identifier assign Expression" },
-  "Conditional": { "kw_if": "Conditional -> IfBlock ElifBlocks ElseBlock" },
-  "IfBlock": { "kw_if": "IfBlock -> kw_if Expression lbrace StmtList rbrace" },
+  "ConditionalStmt": {
+    "kw_if": "ConditionalStmt -> IfBlock ElifBlocks ElseBlock"
+  },
+  "IfBlock": { "kw_if": "IfBlock -> kw_if Expression Segment" },
   "ElifBlocks": {
     "kw_elif": "ElifBlocks -> ElifBlock ElifBlocks",
     "kw_else": "ElifBlocks -> ''",
-    "rbrace": "ElifBlocks -> ''",
     "lbrace": "ElifBlocks -> ''",
     "atomic_type": "ElifBlocks -> ''",
     "lbracket": "ElifBlocks -> ''",
-    "identifier": "ElifBlocks -> ''",
     "kw_return": "ElifBlocks -> ''",
+    "identifier": "ElifBlocks -> ''",
     "lparen": "ElifBlocks -> ''",
-    "int_literal": "ElifBlocks -> ''",
-    "float_literal": "ElifBlocks -> ''",
-    "str_literal": "ElifBlocks -> ''",
+    "op_minus": "ElifBlocks -> ''",
     "bool_literal": "ElifBlocks -> ''",
+    "str_literal": "ElifBlocks -> ''",
     "kw_if": "ElifBlocks -> ''",
     "kw_for": "ElifBlocks -> ''",
-    "kw_while": "ElifBlocks -> ''"
+    "kw_while": "ElifBlocks -> ''",
+    "float_literal": "ElifBlocks -> ''",
+    "int_literal": "ElifBlocks -> ''",
+    "rbrace": "ElifBlocks -> ''"
   },
-  "ElifBlock": {
-    "kw_elif": "ElifBlock -> kw_elif Expression lbrace StmtList rbrace"
-  },
+  "ElifBlock": { "kw_elif": "ElifBlock -> kw_elif Expression Segment" },
   "ElseBlock": {
-    "kw_else": "ElseBlock -> kw_else lbrace StmtList rbrace",
-    "rbrace": "ElseBlock -> ''",
+    "kw_else": "ElseBlock -> kw_else Segment",
     "lbrace": "ElseBlock -> ''",
     "atomic_type": "ElseBlock -> ''",
     "lbracket": "ElseBlock -> ''",
-    "identifier": "ElseBlock -> ''",
     "kw_return": "ElseBlock -> ''",
+    "identifier": "ElseBlock -> ''",
     "lparen": "ElseBlock -> ''",
-    "int_literal": "ElseBlock -> ''",
-    "float_literal": "ElseBlock -> ''",
-    "str_literal": "ElseBlock -> ''",
+    "op_minus": "ElseBlock -> ''",
     "bool_literal": "ElseBlock -> ''",
+    "str_literal": "ElseBlock -> ''",
     "kw_if": "ElseBlock -> ''",
     "kw_for": "ElseBlock -> ''",
-    "kw_while": "ElseBlock -> ''"
+    "kw_while": "ElseBlock -> ''",
+    "float_literal": "ElseBlock -> ''",
+    "int_literal": "ElseBlock -> ''",
+    "rbrace": "ElseBlock -> ''"
   },
-  "Loop": { "kw_for": "Loop -> ForLoop", "kw_while": "Loop -> WhileLoop" },
+  "LoopStmt": {
+    "kw_for": "LoopStmt -> ForLoop",
+    "kw_while": "LoopStmt -> WhileLoop"
+  },
   "ForLoop": {
-    "kw_for": "ForLoop -> kw_for identifier kw_in LoopRange lbrace StmtList rbrace"
+    "kw_for": "ForLoop -> kw_for identifier kw_in LoopRange Segment"
   },
   "LoopRange": {
-    "int_literal": "LoopRange -> int_literal range int_literal LoopStep"
+    "lparen": "LoopRange -> Expression range Expression LoopStep",
+    "op_minus": "LoopRange -> Expression range Expression LoopStep",
+    "bool_literal": "LoopRange -> Expression range Expression LoopStep",
+    "str_literal": "LoopRange -> Expression range Expression LoopStep",
+    "identifier": "LoopRange -> Expression range Expression LoopStep",
+    "float_literal": "LoopRange -> Expression range Expression LoopStep",
+    "int_literal": "LoopRange -> Expression range Expression LoopStep"
   },
   "LoopStep": {
-    "range": "LoopStep -> range int_literal",
+    "range": "LoopStep -> range Expression",
     "lbrace": "LoopStep -> ''"
   },
-  "WhileLoop": {
-    "kw_while": "WhileLoop -> kw_while Expression lbrace StmtList rbrace"
+  "WhileLoop": { "kw_while": "WhileLoop -> kw_while Expression Segment" },
+  "ReturnStmt": { "kw_return": "ReturnStmt -> kw_return ReturnVar" },
+  "ReturnVar": {
+    "lparen": "ReturnVar -> Expression",
+    "op_minus": "ReturnVar -> Expression",
+    "bool_literal": "ReturnVar -> Expression",
+    "str_literal": "ReturnVar -> Expression",
+    "identifier": "ReturnVar -> Expression",
+    "float_literal": "ReturnVar -> Expression",
+    "int_literal": "ReturnVar -> Expression",
+    "semi_colon": "ReturnVar -> ''"
   },
-  "Return": { "kw_return": "Return -> kw_return ReturnVariable" },
-  "ReturnVariable": {
-    "lparen": "ReturnVariable -> Expression",
-    "int_literal": "ReturnVariable -> Expression",
-    "float_literal": "ReturnVariable -> Expression",
-    "str_literal": "ReturnVariable -> Expression",
-    "bool_literal": "ReturnVariable -> Expression",
-    "identifier": "ReturnVariable -> Expression",
-    "semi_colon": "ReturnVariable -> ''"
+  "AssignmentStmt": {
+    "identifier": "AssignmentStmt -> identifier assign Expression"
   },
+  "Segment": { "lbrace": "Segment -> lbrace StmtList rbrace" },
   "Type": {
     "atomic_type": "Type -> atomic_type",
     "lbracket": "Type -> lbracket int_literal rbracket Type"

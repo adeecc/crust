@@ -7,6 +7,8 @@
 #include <list>
 #include <memory>
 #include <ostream>
+#include <parser/lexer.hpp>
+#include <set>
 #include <string>
 #include <utils/uid.hpp>
 #include <vector>
@@ -27,19 +29,24 @@ class CFGNode {
         DECL,
 
         VAR_DECL,
-        ATOMIC_DECL_LIST,
-        ATOMIC_DECL,
+        VAR_DECL_LIST,
+        VAR_DECL_LIST_,
 
         FN_DECL,
-        ARG_LIST,
+        FN_PARAM_LIST,
+        FN_PARAM_LIST_,
+        FN_PARAM,
 
         EXPRESSION,
         EXPRESSION_RHS,
 
         TERM,
-        ID_OR_CALL_TERM,
+        FLOAT_TERM,
+        ARRAY_SUBSCRIPT,
         CALL,
-        FORMAL_ARG_LIST,
+        CALL_PARAM_LIST,
+        CALL_PARAM,
+        CALL_PARAM_LIST_,
 
         STMT_LIST,
         STMT,
@@ -62,6 +69,7 @@ class CFGNode {
         RETURN_VAR,
 
         // Misc
+        SEGMENT,
         TYPE,
         TOKEN,
         ERROR
@@ -84,6 +92,7 @@ class CFGNode {
     const std::string& getName() const { return mName; }
     const ChildrenNode& getChildrenNodes() const { return mChildren; }
     const SourceLocation& getSourceLocation() const { return mSrcLoc; }
+    std::set<Lexer::Token> first;
 
     void addChildNode(std::unique_ptr<CFGNode>&& node) { mChildren.push_back(std::move(node)); }
 
@@ -98,117 +107,6 @@ class CFGNode {
 
         _generateDotFileHelper();
         std::cout << "}\n";
-    }
-
-    friend std::ostream& operator<<(std::ostream& stream, const NodeKind& kind) {
-        switch (kind) {
-            case NodeKind::PROG_DECL:
-                stream << "PROG_DECL";
-                break;
-            case NodeKind::DECL_LIST:
-                stream << "DECL_LIST";
-                break;
-            case NodeKind::DECL:
-                stream << "DECL";
-                break;
-            case NodeKind::VAR_DECL:
-                stream << "VAR_DECL";
-                break;
-            case NodeKind::ATOMIC_DECL_LIST:
-                stream << "ATOMIC_DECL_LIST";
-                break;
-            case NodeKind::ATOMIC_DECL:
-                stream << "ATOMIC_DECL";
-                break;
-
-            case NodeKind::FN_DECL:
-                stream << "FN_DECL";
-                break;
-            case NodeKind::ARG_LIST:
-                stream << "ARG_LIST";
-                break;
-            case NodeKind::EXPRESSION:
-                stream << "EXPRESSION";
-                break;
-            case NodeKind::EXPRESSION_RHS:
-                stream << "EXPRESSION_RHS";
-                break;
-            case NodeKind::TERM:
-                stream << "TERM";
-                break;
-            case NodeKind::ID_OR_CALL_TERM:
-                stream << "ID_OR_CALL_TERM";
-                break;
-            case NodeKind::CALL:
-                stream << "CALL";
-                break;
-
-            case NodeKind::FORMAL_ARG_LIST:
-                stream << "FORMAL_ARG_LIST";
-                break;
-            case NodeKind::STMT_LIST:
-                stream << "STMT_LIST";
-                break;
-            case NodeKind::STMT:
-                stream << "STMT";
-                break;
-            case NodeKind::ASSIGNMENT_STMT:
-                stream << "ASSIGNMENT_STMT";
-                break;
-            case NodeKind::CONDITIONAL_STMT:
-                stream << "CONDITIONAL_STMT";
-                break;
-            case NodeKind::LOOP_STMT:
-                stream << "LOOP_STMT";
-                break;
-
-            case NodeKind::RETURN_STMT:
-                stream << "RETURN_STMT";
-                break;
-            case NodeKind::IF_BLOCK:
-                stream << "IF_BLOCK";
-                break;
-            case NodeKind::ELIF_BLOCKS:
-                stream << "ELIF_BLOCKS";
-                break;
-            case NodeKind::ELIF_BLOCK:
-                stream << "ELIF_BLOCK";
-                break;
-            case NodeKind::ELSE_BLOCK:
-                stream << "ELSE_BLOCK";
-                break;
-            case NodeKind::FOR_LOOP:
-                stream << "FOR_LOOP";
-                break;
-
-            case NodeKind::LOOP_RANGE:
-                stream << "LOOP_RANGE";
-                break;
-            case NodeKind::LOOP_STEP:
-                stream << "LOOP_STEP";
-                break;
-            case NodeKind::WHILE_LOOP:
-                stream << "WHILE_LOOP";
-                break;
-            case NodeKind::RETURN_VAR:
-                stream << "RETURN_VAR";
-                break;
-            case NodeKind::TYPE:
-                stream << "TYPE";
-                break;
-            case NodeKind::TOKEN:
-                stream << "TOKEN";
-                break;
-
-            case NodeKind::ERROR:
-                stream << "ERROR";
-                break;
-
-            default:
-                stream << "Default Case";
-                break;
-        }
-        return stream;
     }
 
     friend std::ostream& operator<<(std::ostream& stream, const CFGNode& node) {
@@ -228,7 +126,7 @@ class CFGNode {
             for (int i = 0; i < indentLevel; ++i) stream << " ";
             if (!child) {
 #ifndef NDEBUG
-                stream << "FATAL ERROR: Somethign went wrong when parsing children of node: " << node.getKind() << ". \n";
+                stream << "FATAL ERROR: Somethign went wrong when parsing children of node: " << (uint32_t)node.getKind() << ". \n";
 #endif
                 continue;
             }

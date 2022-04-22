@@ -15,7 +15,7 @@ class Lexer {
     std::string::const_iterator mBufferIt; /*!< Iterator of the lexer buffer */
 
    public:
-    enum class Token : unsigned int {
+    enum class Token : unsigned {
         // Datatypes
         KW_INT_32 = 0,
         KW_INT_64,
