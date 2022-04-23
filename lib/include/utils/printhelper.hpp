@@ -1,3 +1,5 @@
+#pragma once
+
 #include <parser/lexer.hpp>
 #include <string>
 #include <unordered_map>
@@ -22,10 +24,10 @@ std::unordered_map<Crust::Lexer::Token, std::string> printLogger = {
     {Crust::Lexer::Token::AMP, "&"},
     {Crust::Lexer::Token::RANGE, ".."},
     {Crust::Lexer::Token::ASSIGN, "="},
-    {Crust::Lexer::Token::LCURLYBRACE, "{"},
-    {Crust::Lexer::Token::RCURLYBRACE, "}"},
-    {Crust::Lexer::Token::LSQUAREBRACKET, "["},
-    {Crust::Lexer::Token::RSQUAREBRACKET, "]"},
+    {Crust::Lexer::Token::LBRACE, "{"},
+    {Crust::Lexer::Token::RBRACE, "}"},
+    {Crust::Lexer::Token::LBRACKET, "["},
+    {Crust::Lexer::Token::RBRACKET, "]"},
     {Crust::Lexer::Token::LPAREN, "("},
     {Crust::Lexer::Token::RPAREN, ")"},
     {Crust::Lexer::Token::COMMENT, "//"}};
@@ -37,10 +39,10 @@ std::unordered_map<Crust::Lexer::Token, std::string> printTokenName = {
     {Crust::Lexer::Token::AMP, "Ampersand"},
     {Crust::Lexer::Token::RANGE, "Range    "},
     {Crust::Lexer::Token::ASSIGN, "Assign    "},
-    {Crust::Lexer::Token::LCURLYBRACE, "Left brace"},
-    {Crust::Lexer::Token::RCURLYBRACE, "Right brace"},
-    {Crust::Lexer::Token::LSQUAREBRACKET, "Left bracket"},
-    {Crust::Lexer::Token::RSQUAREBRACKET, "Right bracket"},
+    {Crust::Lexer::Token::LBRACE, "Left brace"},
+    {Crust::Lexer::Token::RBRACE, "Right brace"},
+    {Crust::Lexer::Token::LBRACKET, "Left bracket"},
+    {Crust::Lexer::Token::RBRACKET, "Right bracket"},
     {Crust::Lexer::Token::LPAREN, "Left paren"},
     {Crust::Lexer::Token::RPAREN, "Right paren"},
     {Crust::Lexer::Token::COMMENT, "Comment"}};

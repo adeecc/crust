@@ -1,4 +1,5 @@
 #pragma once
+#include <array>
 #include <common/sourceloc.hpp>
 #include <string>
 
@@ -14,9 +15,9 @@ class Lexer {
     std::string::const_iterator mBufferIt; /*!< Iterator of the lexer buffer */
 
    public:
-    enum class Token : unsigned int {
+    enum class Token : unsigned {
         // Datatypes
-        KW_INT_32 = 100,
+        KW_INT_32 = 0,
         KW_INT_64,
         KW_UINT_32,
         KW_UINT_64,
@@ -30,7 +31,6 @@ class Lexer {
 
         // Declarations
         KW_LET,
-        KW_CONST,
 
         // Conditions
         KW_IF,
@@ -41,16 +41,10 @@ class Lexer {
         KW_FOR,
         KW_IN,
         KW_WHILE,
-        KW_BREAK,
-        KW_CONTINUE,
 
         // Functions
         KW_FN,
         KW_RETURN,
-
-        // Modules
-        KW_IMPORT,
-        KW_EXPORT,
 
         // Literals
         INT_LITERAL,
@@ -84,15 +78,18 @@ class Lexer {
         RANGE,
         ASSIGN,
         NAMESPACE,
-        LCURLYBRACE,
-        RCURLYBRACE,
-        LSQUAREBRACKET,
-        RSQUAREBRACKET,
+        LBRACE,
+        RBRACE,
+        LBRACKET,
+        RBRACKET,
         LPAREN,
         RPAREN,
 
         // Comment
         COMMENT,
+
+        // Start of file
+        TOK_SOF,
 
         // End of file
         TOK_EOF,
@@ -101,11 +98,14 @@ class Lexer {
         UNKNOWN
     };
 
+    const static std::array<std::string, (size_t)Token::UNKNOWN + 1> token_to_str;
+
     Lexer()
         : mCurrentInt{0}, mCurrentFloat{0.0f} {};
 
     bool init(const std::string& filename);
 
+    Token getNextTokenAndComment();
     Token getNextToken();
 
     //  Common::Type GetCurrentType() const { return mCurrentType; }
@@ -121,4 +121,5 @@ class Lexer {
     Token tokenizeCurrentStr();
     char advance();
 };
+
 }  // namespace Crust

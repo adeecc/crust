@@ -1,0 +1,207 @@
+{
+  "ProgDecl": {
+    "$": "ProgDecl -> DeclList",
+    "kw_fn": "ProgDecl -> DeclList",
+    "atomic_type": "ProgDecl -> DeclList",
+    "lbracket": "ProgDecl -> DeclList"
+  },
+  "DeclList": {
+    "$": "DeclList -> ''",
+    "kw_fn": "DeclList -> Decl DeclList",
+    "atomic_type": "DeclList -> Decl DeclList",
+    "lbracket": "DeclList -> Decl DeclList"
+  },
+  "Decl": {
+    "atomic_type": "Decl -> VarDecl semi_colon",
+    "lbracket": "Decl -> VarDecl semi_colon",
+    "kw_fn": "Decl -> FnDecl"
+  },
+  "VarDecl": {
+    "atomic_type": "VarDecl -> Type VarDeclList",
+    "lbracket": "VarDecl -> Type VarDeclList"
+  },
+  "VarDeclList": { "identifier": "VarDeclList -> identifier VarDeclList_" },
+  "VarDeclList_": {
+    "comma": "VarDeclList_ -> comma VarDeclList",
+    "semi_colon": "VarDeclList_ -> ''"
+  },
+  "FnDecl": {
+    "kw_fn": "FnDecl -> kw_fn identifier lparen FnParamList rparen Type Segment"
+  },
+  "FnParamList": {
+    "atomic_type": "FnParamList -> fnParam FnParamList_",
+    "lbracket": "FnParamList -> fnParam FnParamList_",
+    "rparen": "FnParamList -> ''"
+  },
+  "fnParam": {
+    "atomic_type": "fnParam -> Type identifier",
+    "lbracket": "fnParam -> Type identifier"
+  },
+  "FnParamList_": {
+    "comma": "FnParamList_ -> comma FnParamList",
+    "rparen": "FnParamList_ -> ''"
+  },
+  "Expression": {
+    "lparen": "Expression -> Term ExpressionRHS",
+    "op_minus": "Expression -> Term ExpressionRHS",
+    "bool_literal": "Expression -> Term ExpressionRHS",
+    "str_literal": "Expression -> Term ExpressionRHS",
+    "identifier": "Expression -> Term ExpressionRHS",
+    "float_literal": "Expression -> Term ExpressionRHS",
+    "int_literal": "Expression -> Term ExpressionRHS"
+  },
+  "ExpressionRHS": {
+    "bin_op": "ExpressionRHS -> bin_op Expression",
+    "rparen": "ExpressionRHS -> ''",
+    "rbracket": "ExpressionRHS -> ''",
+    "comma": "ExpressionRHS -> ''",
+    "semi_colon": "ExpressionRHS -> ''",
+    "lbrace": "ExpressionRHS -> ''",
+    "range": "ExpressionRHS -> ''"
+  },
+  "Term": {
+    "lparen": "Term -> lparen Expression rparen",
+    "op_minus": "Term -> op_minus FloatTerm",
+    "float_literal": "Term -> FloatTerm",
+    "int_literal": "Term -> FloatTerm",
+    "bool_literal": "Term -> bool_literal",
+    "str_literal": "Term -> str_literal",
+    "identifier": "Term -> identifier Term -> ArraySubscript Term -> Call"
+  },
+  "FloatTerm": {
+    "float_literal": "FloatTerm -> float_literal",
+    "int_literal": "FloatTerm -> int_literal"
+  },
+  "ArraySubscript": {
+    "identifier": "ArraySubscript -> identifier lbracket Expression rbracket"
+  },
+  "Call": { "identifier": "Call -> identifier lparen CallParamList rparen" },
+  "CallParamList": {
+    "lparen": "CallParamList -> Expression CallParamList_",
+    "op_minus": "CallParamList -> Expression CallParamList_",
+    "int_literal": "CallParamList -> Expression CallParamList_",
+    "float_literal": "CallParamList -> Expression CallParamList_",
+    "str_literal": "CallParamList -> Expression CallParamList_",
+    "bool_literal": "CallParamList -> Expression CallParamList_",
+    "identifier": "CallParamList -> Expression CallParamList_",
+    "rparen": "CallParamList -> ''"
+  },
+  "CallParamList_": {
+    "comma": "CallParamList_ -> comma CallParamList",
+    "rparen": "CallParamList_ -> ''"
+  },
+  "StmtList": {
+    "lbrace": "StmtList -> Stmt StmtList",
+    "atomic_type": "StmtList -> Stmt StmtList",
+    "lbracket": "StmtList -> Stmt StmtList",
+    "kw_return": "StmtList -> Stmt StmtList",
+    "identifier": "StmtList -> Stmt StmtList",
+    "lparen": "StmtList -> Stmt StmtList",
+    "op_minus": "StmtList -> Stmt StmtList",
+    "bool_literal": "StmtList -> Stmt StmtList",
+    "str_literal": "StmtList -> Stmt StmtList",
+    "kw_if": "StmtList -> Stmt StmtList",
+    "kw_for": "StmtList -> Stmt StmtList",
+    "kw_while": "StmtList -> Stmt StmtList",
+    "float_literal": "StmtList -> Stmt StmtList",
+    "int_literal": "StmtList -> Stmt StmtList",
+    "rbrace": "StmtList -> ''"
+  },
+  "Stmt": {
+    "lbrace": "Stmt -> Segment",
+    "kw_if": "Stmt -> ConditionalStmt",
+    "kw_for": "Stmt -> LoopStmt",
+    "kw_while": "Stmt -> LoopStmt",
+    "atomic_type": "Stmt -> VarDecl semi_colon",
+    "lbracket": "Stmt -> VarDecl semi_colon",
+    "kw_return": "Stmt -> ReturnStmt semi_colon",
+    "identifier": "Stmt -> AssignmentStmt semi_colon Stmt -> Expression semi_colon",
+    "lparen": "Stmt -> Expression semi_colon",
+    "op_minus": "Stmt -> Expression semi_colon",
+    "bool_literal": "Stmt -> Expression semi_colon",
+    "str_literal": "Stmt -> Expression semi_colon",
+    "float_literal": "Stmt -> Expression semi_colon",
+    "int_literal": "Stmt -> Expression semi_colon"
+  },
+  "ConditionalStmt": {
+    "kw_if": "ConditionalStmt -> IfBlock ElifBlocks ElseBlock"
+  },
+  "IfBlock": { "kw_if": "IfBlock -> kw_if Expression Segment" },
+  "ElifBlocks": {
+    "kw_elif": "ElifBlocks -> ElifBlock ElifBlocks",
+    "kw_else": "ElifBlocks -> ''",
+    "lbrace": "ElifBlocks -> ''",
+    "atomic_type": "ElifBlocks -> ''",
+    "lbracket": "ElifBlocks -> ''",
+    "kw_return": "ElifBlocks -> ''",
+    "identifier": "ElifBlocks -> ''",
+    "lparen": "ElifBlocks -> ''",
+    "op_minus": "ElifBlocks -> ''",
+    "bool_literal": "ElifBlocks -> ''",
+    "str_literal": "ElifBlocks -> ''",
+    "kw_if": "ElifBlocks -> ''",
+    "kw_for": "ElifBlocks -> ''",
+    "kw_while": "ElifBlocks -> ''",
+    "float_literal": "ElifBlocks -> ''",
+    "int_literal": "ElifBlocks -> ''",
+    "rbrace": "ElifBlocks -> ''"
+  },
+  "ElifBlock": { "kw_elif": "ElifBlock -> kw_elif Expression Segment" },
+  "ElseBlock": {
+    "kw_else": "ElseBlock -> kw_else Segment",
+    "lbrace": "ElseBlock -> ''",
+    "atomic_type": "ElseBlock -> ''",
+    "lbracket": "ElseBlock -> ''",
+    "kw_return": "ElseBlock -> ''",
+    "identifier": "ElseBlock -> ''",
+    "lparen": "ElseBlock -> ''",
+    "op_minus": "ElseBlock -> ''",
+    "bool_literal": "ElseBlock -> ''",
+    "str_literal": "ElseBlock -> ''",
+    "kw_if": "ElseBlock -> ''",
+    "kw_for": "ElseBlock -> ''",
+    "kw_while": "ElseBlock -> ''",
+    "float_literal": "ElseBlock -> ''",
+    "int_literal": "ElseBlock -> ''",
+    "rbrace": "ElseBlock -> ''"
+  },
+  "LoopStmt": {
+    "kw_for": "LoopStmt -> ForLoop",
+    "kw_while": "LoopStmt -> WhileLoop"
+  },
+  "ForLoop": {
+    "kw_for": "ForLoop -> kw_for identifier kw_in LoopRange Segment"
+  },
+  "LoopRange": {
+    "lparen": "LoopRange -> Expression range Expression LoopStep",
+    "op_minus": "LoopRange -> Expression range Expression LoopStep",
+    "bool_literal": "LoopRange -> Expression range Expression LoopStep",
+    "identifier": "LoopRange -> Expression range Expression LoopStep",
+    "float_literal": "LoopRange -> Expression range Expression LoopStep",
+    "int_literal": "LoopRange -> Expression range Expression LoopStep"
+  },
+  "LoopStep": {
+    "range": "LoopStep -> range Expression",
+    "lbrace": "LoopStep -> ''"
+  },
+  "WhileLoop": { "kw_while": "WhileLoop -> kw_while Expression Segment" },
+  "ReturnStmt": { "kw_return": "ReturnStmt -> kw_return ReturnVar" },
+  "ReturnVar": {
+    "lparen": "ReturnVar -> Expression",
+    "op_minus": "ReturnVar -> Expression",
+    "bool_literal": "ReturnVar -> Expression",
+    "str_literal": "ReturnVar -> Expression",
+    "identifier": "ReturnVar -> Expression",
+    "float_literal": "ReturnVar -> Expression",
+    "int_literal": "ReturnVar -> Expression",
+    "semi_colon": "ReturnVar -> ''"
+  },
+  "AssignmentStmt": {
+    "identifier": "AssignmentStmt -> identifier assign Expression"
+  },
+  "Segment": { "lbrace": "Segment -> lbrace StmtList rbrace" },
+  "Type": {
+    "atomic_type": "Type -> atomic_type",
+    "lbracket": "Type -> lbracket int_literal rbracket Type"
+  }
+}

@@ -1,10 +1,77 @@
 #include <algorithm>
 #include <common/errorlogger.hpp>
 #include <fstream>
+#include <iostream>
 #include <iterator>
 #include <parser/lexer.hpp>
 
 using namespace Crust;
+
+const std::array<std::string, (size_t)Lexer::Token::UNKNOWN + 1> Lexer::token_to_str = {
+    "KW_INT_32",
+    "KW_INT_64",
+    "KW_UINT_32",
+    "KW_UINT_64",
+    "KW_FLOAT_32",
+    "KW_FLOAT_64",
+    "KW_STRING",
+    "KW_BOOL",
+    "KW_VOID",
+    "KW_TRUE",
+    "KW_FALSE",
+    "KW_LET",
+    "KW_IF",
+    "KW_ELIF",
+    "KW_ELSE",
+    "KW_FOR",
+    "KW_IN",
+    "KW_WHILE",
+    "KW_FN",
+    "KW_RETURN",
+
+    "INT_LITERAL",
+    "FLOAT_LITERAL",
+    "STR_LITERAL",
+
+    "IDENTIFIER",
+
+    "OP_PLUS",
+    "OP_MINUS",
+    "OP_MULT",
+    "OP_DIV",
+    "OP_MOD",
+    "OP_AND",
+    "OP_OR",
+    "OP_GT",
+    "OP_GE",
+    "OP_EQ",
+    "OP_NE",
+    "OP_LE",
+    "OP_LT",
+
+    "DOT",
+    "SEMI_COLON",
+    "COLON",
+    "COMMA",
+    "AMP",
+    "RANGE",
+    "ASSIGN",
+    "NAMESPACE",
+    "LBRACE",
+    "RBRACE",
+    "LBRACKET",
+    "RBRACKET",
+    "LPAREN",
+    "RPAREN",
+
+    "COMMENT",
+
+    "TOK_SOF",
+
+    "TOK_EOF",
+
+    "UNKNOWN",
+};
 
 bool Lexer::init(const std::string& filename) {
     std::ifstream stream(filename);
@@ -24,7 +91,7 @@ char Lexer::advance() {
     return *mBufferIt;
 }
 
-Lexer::Token Lexer::getNextToken() {
+Lexer::Token Lexer::getNextTokenAndComment() {
     while (mBufferIt != mBuffer.end() && isspace(*mBufferIt)) {
         advance();
     }
@@ -61,19 +128,19 @@ Lexer::Token Lexer::getNextToken() {
             return Token::AMP;
         case '{':
             advance();
-            return Token::LCURLYBRACE;
+            return Token::LBRACE;
         case '[':
             advance();
-            return Token::LSQUAREBRACKET;
+            return Token::LBRACKET;
         case '(':
             advance();
             return Token::LPAREN;
         case '}':
             advance();
-            return Token::RCURLYBRACE;
+            return Token::RBRACE;
         case ']':
             advance();
-            return Token::RSQUAREBRACKET;
+            return Token::RBRACKET;
         case ')':
             advance();
             return Token::RPAREN;
@@ -207,6 +274,19 @@ Lexer::Token Lexer::getNextToken() {
     return Token::UNKNOWN;
 }
 
+Lexer::Token Lexer::getNextToken() {
+    Token current = getNextTokenAndComment();
+    while (current == Lexer::Token::COMMENT) {
+        current = getNextTokenAndComment();
+    }
+
+#ifndef NDEBUG
+    std::cout << "Returning Token: " << Lexer::token_to_str[(size_t)current] << "\n";
+#endif
+
+    return current;
+}
+
 Lexer::Token Lexer::tokenizeCurrentStr() {
     if (mCurrentStr == "i32")
         return Token::KW_INT_32;
@@ -232,8 +312,7 @@ Lexer::Token Lexer::tokenizeCurrentStr() {
         return Token::KW_FALSE;
     else if (mCurrentStr == "let")
         return Token::KW_LET;
-    else if (mCurrentStr == "const")
-        return Token::KW_CONST;
+
     else if (mCurrentStr == "if")
         return Token::KW_IF;
     else if (mCurrentStr == "elif")
@@ -246,18 +325,12 @@ Lexer::Token Lexer::tokenizeCurrentStr() {
         return Token::KW_IN;
     else if (mCurrentStr == "while")
         return Token::KW_WHILE;
-    else if (mCurrentStr == "break")
-        return Token::KW_BREAK;
-    else if (mCurrentStr == "continue")
-        return Token::KW_CONTINUE;
+
     else if (mCurrentStr == "fn")
         return Token::KW_FN;
     else if (mCurrentStr == "return")
         return Token::KW_RETURN;
-    else if (mCurrentStr == "import")
-        return Token::KW_IMPORT;
-    else if (mCurrentStr == "export")
-        return Token::KW_EXPORT;
+
     else if (mCurrentStr == "and")
         return Token::OP_AND;
     else if (mCurrentStr == "or")

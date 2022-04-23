@@ -1,3 +1,5 @@
+#pragma once
+
 namespace Crust {
 class SourceLocation {
    public:
