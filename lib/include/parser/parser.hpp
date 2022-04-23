@@ -17,7 +17,6 @@ class Parser {
 
     std::unique_ptr<CFGNode> parseProgram(const std::string& filename);
 
-
    private:
     void skipToNextSemiColon();
     Lexer::Token peekNextToken();
@@ -29,24 +28,28 @@ class Parser {
     std::unique_ptr<Decl> parseDecl();
 
     std::unique_ptr<VarDecl> parseVarDecl();
-    std::unique_ptr<AtomicDeclList> parseAtomicDeclList();
-    std::unique_ptr<AtomicDecl> parseAtomicDecl();
+    std::unique_ptr<VarDeclList> parseVarDeclList();
+    std::unique_ptr<VarDeclList_> parseVarDeclList_();
 
     std::unique_ptr<FnDecl> parseFnDecl();
-    std::unique_ptr<ArgList> parseArgList();
+    std::unique_ptr<FnParamList> parseFnParamList();
+    std::unique_ptr<FnParamList_> parseFnParamList_();
+    std::unique_ptr<FnParam> parseFnParam();
 
     std::unique_ptr<Expression> parseExpression();
     std::unique_ptr<ExpressionRHS> parseExpressionRHS();
 
     std::unique_ptr<Term> parseTerm();
-    std::unique_ptr<IdOrCallTerm> parseIdOrCallTerm();
+    std::unique_ptr<FloatTerm> parseFloatTerm();
+    std::unique_ptr<ArraySubscript> parseArraySubscript();
     std::unique_ptr<Call> parseCall();
-    std::unique_ptr<FormalArgList> parseFormalArgList();
+    std::unique_ptr<CallParamList> parseCallParamList();
+    std::unique_ptr<CallParamList_> parseCallParamList_();
 
     std::unique_ptr<StmtList> parseStmtList();
     std::unique_ptr<Stmt> parseStmt();
-    std::unique_ptr<AssignmentStmt> parseAssignmentStmt();
     std::unique_ptr<ConditionalStmt> parseConditionalStmt();
+    std::unique_ptr<AssignmentStmt> parseAssignmentStmt();
     std::unique_ptr<LoopStmt> parseLoopStmt();
     std::unique_ptr<ReturnStmt> parseReturnStmt();
 
@@ -63,6 +66,7 @@ class Parser {
 
     std::unique_ptr<ReturnVar> parseReturnVar();
 
+    std::unique_ptr<Segment> parseSegment();
     std::unique_ptr<Token> parseToken(Lexer::Token token);
     std::unique_ptr<Type> parseType();
 

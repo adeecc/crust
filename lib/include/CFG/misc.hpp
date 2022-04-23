@@ -12,7 +12,9 @@ class Segment : public CFGNode {
     }
 
    public:
-    Segment() : CFGNode(NodeKind::ERROR, "ERROR") {}
+    Segment() : CFGNode(NodeKind::ERROR, "ERROR") {
+        generate_first();
+    }
 
     Segment(std::unique_ptr<CFGNode>&& lbracket,
             std::unique_ptr<CFGNode>&& stmtList,
@@ -27,7 +29,8 @@ class Segment : public CFGNode {
 
 class Token : public CFGNode {
    public:
-    Token() : CFGNode(NodeKind::ERROR, "ERROR") {}
+    Token() : CFGNode(NodeKind::ERROR, "ERROR") {
+    }
 
     Token(Lexer::Token token) : CFGNode(NodeKind::TOKEN), mToken(token) {
         mName = "TOKEN_" + Lexer::token_to_str[(size_t)mToken];
@@ -60,7 +63,9 @@ class Type : public CFGNode {
     }
 
    public:
-    Type() : CFGNode(NodeKind::ERROR, "ERROR") {}
+    Type() : CFGNode(NodeKind::ERROR, "ERROR") {
+        generate_first();
+    }
 
     Type(std::unique_ptr<CFGNode>&& atomic_type) : CFGNode(NodeKind::TYPE, "TYPE") {
         addChildNode(std::move(atomic_type));

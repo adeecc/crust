@@ -1,45 +1,42 @@
-// sequential statements
-// expressions
-// conditional construct
-// loop construct
-// functions
-// arrays
-
-fn rec_fact(i32 x, ) i32 {
+fn rec_fact(i32 x) i64 {
     if (x == 1) or (x == 0) {
         return 1;
     }
 
-    i64 ret_val = x * rec_fact(x - 1, ), ;
+    i64 ret_val;
+    ret_val = x * rec_fact(x - 1) ;
     return ret_val;
 }
 
-fn iter_fact(i32 x, ) void {
-    i64 ret_val = x, i = 0, ;
-    for i in 1 .. 10 {
+fn iter_fact(i32 x) i64 {
+    i64 ret_val;
+    ret_val = x;
+
+    for i in 1 .. x {
         ret_val = ret_val * i;
     }
 
     return ret_val;
 }
 
-fn main() {
-    // No empty delclarations -> `i32 x;` not allowed.
-    i32 x = -1, ;
-    u8 opt = -1, ;
+fn iter_fact(i32 x) i64 {
+    i32 x, opt;
+
+    x = 1;
+    opt = 0;
 
     while opt != 2 {
-        input("Enter number and option:", x, opt, );
+        input("Enter number and option:", x, opt);
 
         if opt == 0 {
-            print(rec_fact(x, ));
+            print(rec_fact(x));
         } elif opt == 1 {
-            print(rec_fact(x, ));
+            print(rec_fact(x));
         } else {
-            print("Invlaid Option", );
+            print("Invlaid Option");
         }
     }
 
-    [4]i32 arr = 0,;
-    i32 t = arr + 4, ;
+    [4]i32 arr;
+    x = arr[4];
 }

@@ -5,6 +5,48 @@
 
 namespace Crust {
 
+class FnParamList_ : public CFGNode {
+    void generate_first() {
+        first.insert(Lexer::Token::COMMA);
+        first.insert(Lexer::Token::RPAREN);
+    }
+
+   public:
+    FnParamList_(std::unique_ptr<CFGNode>&& comma,
+                 std::unique_ptr<CFGNode>&& fnParamList) : CFGNode(NodeKind::FN_PARAM_LIST_, "FN_PARAM_LIST_") {
+        addChildNode(std::move(comma));
+        addChildNode(std::move(fnParamList));
+
+        generate_first();
+    }
+
+    FnParamList_() : CFGNode(NodeKind::FN_PARAM_LIST_, "FN_PARAM_LIST_") {
+        generate_first();
+    }
+};
+
+class FnParam : public CFGNode {
+    void generate_first() {
+        for (unsigned t = (unsigned)Lexer::Token::KW_INT_32; t <= (unsigned)Lexer::Token::KW_VOID; ++t) {
+            first.insert(static_cast<Lexer::Token>(t));
+        }
+        first.insert(Lexer::Token::LBRACKET);
+    }
+
+   public:
+    FnParam(std::unique_ptr<CFGNode>&& type,
+            std::unique_ptr<CFGNode>&& identifier) : CFGNode(NodeKind::FN_PARAM, "FN_PARAM") {
+        addChildNode(std::move(type));
+        addChildNode(std::move(identifier));
+
+        generate_first();
+    }
+
+    FnParam() : CFGNode(NodeKind::ERROR, "ERROR") {
+        generate_first();
+    }
+};
+
 class FnParamList : public CFGNode {
     void generate_first() {
         for (unsigned t = (unsigned)Lexer::Token::KW_INT_32; t <= (unsigned)Lexer::Token::KW_VOID; ++t) {
@@ -24,7 +66,6 @@ class FnParamList : public CFGNode {
     }
 
     FnParamList() : CFGNode(NodeKind::FN_PARAM_LIST, "FN_PARAM_LIST") {
-
         generate_first();
     }
 };
@@ -35,7 +76,9 @@ class FnDecl : public CFGNode {
     }
 
    public:
-    FnDecl() : CFGNode(NodeKind::ERROR, "ERROR") {}
+    FnDecl() : CFGNode(NodeKind::ERROR, "ERROR") {
+        generate_first();
+    }
 
     FnDecl(std::unique_ptr<CFGNode>&& kw_fn,
            std::unique_ptr<CFGNode>&& identifier,
@@ -82,7 +125,9 @@ class VarDeclList : public CFGNode {
     }
 
    public:
-    VarDeclList() : CFGNode(NodeKind::ERROR, "ERROR") {}
+    VarDeclList() : CFGNode(NodeKind::ERROR, "ERROR") {
+        generate_first();
+    }
 
     VarDeclList(std::unique_ptr<CFGNode>&& identifier,
                 std::unique_ptr<CFGNode>&& varDeclList_) : CFGNode(NodeKind::VAR_DECL_LIST, "VAR_DECL_LIST") {
@@ -102,7 +147,9 @@ class VarDecl : public CFGNode {
     }
 
    public:
-    VarDecl() : CFGNode(NodeKind::ERROR, "ERROR") {}
+    VarDecl() : CFGNode(NodeKind::ERROR, "ERROR") {
+        generate_first();
+    }
 
     VarDecl(std::unique_ptr<CFGNode>&& type,
             std::unique_ptr<CFGNode>&& varDeclList) : CFGNode(NodeKind::VAR_DECL, "VAR_DECL") {
@@ -123,7 +170,9 @@ class Decl : public CFGNode {
     }
 
    public:
-    Decl() : CFGNode(NodeKind::ERROR, "ERROR") {}
+    Decl() : CFGNode(NodeKind::ERROR, "ERROR") {
+        generate_first();
+    }
 
     Decl(std::unique_ptr<CFGNode>&& varDecl, std::unique_ptr<CFGNode>&& semi_colon) : CFGNode(NodeKind::DECL, "DECL") {
         addChildNode(std::move(varDecl));
@@ -172,7 +221,9 @@ class ProgDecl : public CFGNode {
     }
 
    public:
-    ProgDecl() : CFGNode(NodeKind::ERROR, "ERROR") {}
+    ProgDecl() : CFGNode(NodeKind::ERROR, "ERROR") {
+        generate_first();
+    }
 
     ProgDecl(std::unique_ptr<CFGNode>&& declList) : CFGNode{NodeKind::PROG_DECL, "PROG_DECL"} {
         addChildNode(std::move(declList));

@@ -68,6 +68,10 @@ class Call : public CFGNode {
 
         generate_first();
     }
+
+    Call() : CFGNode(NodeKind::ERROR, "ERROR") {
+        generate_first();
+    }
 };
 
 class ArraySubscript : public CFGNode {
@@ -76,7 +80,9 @@ class ArraySubscript : public CFGNode {
     }
 
    public:
-    ArraySubscript() : CFGNode(NodeKind::ERROR, "ERROR") {}
+    ArraySubscript() : CFGNode(NodeKind::ERROR, "ERROR") {
+        generate_first();
+    }
 
     ArraySubscript(std::unique_ptr<CFGNode>&& identifier,
                    std::unique_ptr<CFGNode>&& lbracket,
@@ -98,7 +104,9 @@ class FloatTerm : public CFGNode {
     }
 
    public:
-    FloatTerm() : CFGNode(NodeKind::ERROR, "ERROR") {}
+    FloatTerm() : CFGNode(NodeKind::ERROR, "ERROR") {
+        generate_first();
+    }
 
     FloatTerm(std::unique_ptr<CFGNode>&& literal) : CFGNode(NodeKind::FLOAT_TERM, "FLOAT_TERM") {
         addChildNode(std::move(literal));
@@ -120,7 +128,9 @@ class Term : public CFGNode {
     }
 
    public:
-    Term() : CFGNode(NodeKind::ERROR, "ERROR") {}
+    Term() : CFGNode(NodeKind::ERROR, "ERROR") {
+        generate_first();
+    }
 
     Term(std::unique_ptr<CFGNode>&& lparen,
          std::unique_ptr<CFGNode>&& expression,
@@ -187,7 +197,9 @@ class Expression : public CFGNode {
     }
 
    public:
-    Expression() : CFGNode(NodeKind::ERROR, "ERROR") {}
+    Expression() : CFGNode(NodeKind::ERROR, "ERROR") {
+        generate_first();
+    }
 
     Expression(std::unique_ptr<CFGNode>&& term,
                std::unique_ptr<CFGNode>&& expression_rhs) : CFGNode(NodeKind::EXPRESSION, "EXPRESSION") {

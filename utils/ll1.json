@@ -1,10 +1,12 @@
 {
   "ProgDecl": {
+    "$": "ProgDecl -> DeclList",
     "kw_fn": "ProgDecl -> DeclList",
     "atomic_type": "ProgDecl -> DeclList",
     "lbracket": "ProgDecl -> DeclList"
   },
   "DeclList": {
+    "$": "DeclList -> ''",
     "kw_fn": "DeclList -> Decl DeclList",
     "atomic_type": "DeclList -> Decl DeclList",
     "lbracket": "DeclList -> Decl DeclList"
@@ -77,11 +79,11 @@
   "CallParamList": {
     "lparen": "CallParamList -> Expression CallParamList_",
     "op_minus": "CallParamList -> Expression CallParamList_",
-    "bool_literal": "CallParamList -> Expression CallParamList_",
-    "str_literal": "CallParamList -> Expression CallParamList_",
-    "identifier": "CallParamList -> Expression CallParamList_",
-    "float_literal": "CallParamList -> Expression CallParamList_",
     "int_literal": "CallParamList -> Expression CallParamList_",
+    "float_literal": "CallParamList -> Expression CallParamList_",
+    "str_literal": "CallParamList -> Expression CallParamList_",
+    "bool_literal": "CallParamList -> Expression CallParamList_",
+    "identifier": "CallParamList -> Expression CallParamList_",
     "rparen": "CallParamList -> ''"
   },
   "CallParamList_": {
@@ -174,7 +176,6 @@
     "lparen": "LoopRange -> Expression range Expression LoopStep",
     "op_minus": "LoopRange -> Expression range Expression LoopStep",
     "bool_literal": "LoopRange -> Expression range Expression LoopStep",
-    "str_literal": "LoopRange -> Expression range Expression LoopStep",
     "identifier": "LoopRange -> Expression range Expression LoopStep",
     "float_literal": "LoopRange -> Expression range Expression LoopStep",
     "int_literal": "LoopRange -> Expression range Expression LoopStep"
