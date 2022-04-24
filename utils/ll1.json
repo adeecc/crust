@@ -42,22 +42,13 @@
     "rparen": "FnParamList_ -> ''"
   },
   "Expression": {
-    "lparen": "Expression -> Term ExpressionRHS",
-    "op_minus": "Expression -> Term ExpressionRHS",
-    "bool_literal": "Expression -> Term ExpressionRHS",
-    "str_literal": "Expression -> Term ExpressionRHS",
-    "identifier": "Expression -> Term ExpressionRHS",
-    "float_literal": "Expression -> Term ExpressionRHS",
-    "int_literal": "Expression -> Term ExpressionRHS"
-  },
-  "ExpressionRHS": {
-    "bin_op": "ExpressionRHS -> bin_op Expression",
-    "rparen": "ExpressionRHS -> ''",
-    "rbracket": "ExpressionRHS -> ''",
-    "comma": "ExpressionRHS -> ''",
-    "semi_colon": "ExpressionRHS -> ''",
-    "lbrace": "ExpressionRHS -> ''",
-    "range": "ExpressionRHS -> ''"
+    "lparen": "Expression -> Term bin_op Expression Expression -> Term",
+    "op_minus": "Expression -> Term bin_op Expression Expression -> Term",
+    "bool_literal": "Expression -> Term bin_op Expression Expression -> Term",
+    "str_literal": "Expression -> Term bin_op Expression Expression -> Term",
+    "identifier": "Expression -> Term bin_op Expression Expression -> Term",
+    "float_literal": "Expression -> Term bin_op Expression Expression -> Term",
+    "int_literal": "Expression -> Term bin_op Expression Expression -> Term"
   },
   "Term": {
     "lparen": "Term -> lparen Expression rparen",
@@ -79,11 +70,11 @@
   "CallParamList": {
     "lparen": "CallParamList -> Expression CallParamList_",
     "op_minus": "CallParamList -> Expression CallParamList_",
-    "int_literal": "CallParamList -> Expression CallParamList_",
-    "float_literal": "CallParamList -> Expression CallParamList_",
-    "str_literal": "CallParamList -> Expression CallParamList_",
     "bool_literal": "CallParamList -> Expression CallParamList_",
+    "str_literal": "CallParamList -> Expression CallParamList_",
     "identifier": "CallParamList -> Expression CallParamList_",
+    "float_literal": "CallParamList -> Expression CallParamList_",
+    "int_literal": "CallParamList -> Expression CallParamList_",
     "rparen": "CallParamList -> ''"
   },
   "CallParamList_": {

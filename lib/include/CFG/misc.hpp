@@ -16,12 +16,14 @@ class Segment : public CFGNode {
         generate_first();
     }
 
-    Segment(std::unique_ptr<CFGNode>&& lbracket,
-            std::unique_ptr<CFGNode>&& stmtList,
-            std::unique_ptr<CFGNode>&& rbracket) : CFGNode(NodeKind::SEGMENT, "SEGMENT") {
-        addChildNode(std::move(lbracket));
-        addChildNode(std::move(stmtList));
-        addChildNode(std::move(rbracket));
+    Segment(CFGNode* lbracket,
+            CFGNode* stmtList,
+            CFGNode* rbracket) : CFGNode(NodeKind::SEGMENT, "SEGMENT") {
+        addCode(stmtList->getCode());
+
+        addChildNode(lbracket);
+        addChildNode(stmtList);
+        addChildNode(rbracket);
 
         generate_first();
     }
@@ -32,26 +34,29 @@ class Token : public CFGNode {
     Token() : CFGNode(NodeKind::ERROR, "ERROR") {
     }
 
-    Token(Lexer::Token token) : CFGNode(NodeKind::TOKEN), mToken(token) {
-        mName = "TOKEN_" + Lexer::token_to_str[(size_t)mToken];
+    Token(Lexer::Token token) : CFGNode(NodeKind::TOKEN), mToken(token), mVal(Lexer::token_to_str[(size_t)mToken]) {
+        mName = "TOKEN_" + mVal;
     }
 
-    Token(Lexer::Token token, std::string identifier_val) : CFGNode(NodeKind::TOKEN), mToken(token) {
-        mName = "TOKEN_" + Lexer::token_to_str[(size_t)mToken] + "(" + identifier_val + ")";
+    Token(Lexer::Token token, std::string identifier_val) : CFGNode(NodeKind::TOKEN), mToken(token), mVal(identifier_val) {
+        std::replace(identifier_val.begin(), identifier_val.end(), ' ', '_');
+        mName = "TOKEN_" + Lexer::token_to_str[(size_t)mToken] + "_" + mVal;
     }
 
-    Token(Lexer::Token token, int int_literal) : CFGNode(NodeKind::TOKEN), mToken(token) {
-        mName = "TOKEN_" + Lexer::token_to_str[(size_t)mToken] + "(" + std::to_string(int_literal) + ")";
+    Token(Lexer::Token token, int int_literal) : CFGNode(NodeKind::TOKEN), mToken(token), mVal(std::to_string(int_literal)) {
+        mName = "TOKEN_" + Lexer::token_to_str[(size_t)mToken] + "_" + mVal;
     }
 
-    Token(Lexer::Token token, float float_literal) : CFGNode(NodeKind::TOKEN), mToken(token) {
-        mName = "TOKEN_" + Lexer::token_to_str[(size_t)mToken] + "(" + std::to_string(float_literal) + ")";
+    Token(Lexer::Token token, float float_literal) : CFGNode(NodeKind::TOKEN), mToken(token), mVal(std::to_string(float_literal)) {
+        mName = "TOKEN_" + Lexer::token_to_str[(size_t)mToken] + "_" + mVal;
     }
 
     Lexer::Token getToken() const { return mToken; }
+    std::string getVal() const { return mVal; }
 
    private:
     Lexer::Token mToken;
+    std::string mVal = "";
 };
 
 class Type : public CFGNode {
@@ -67,20 +72,20 @@ class Type : public CFGNode {
         generate_first();
     }
 
-    Type(std::unique_ptr<CFGNode>&& atomic_type) : CFGNode(NodeKind::TYPE, "TYPE") {
-        addChildNode(std::move(atomic_type));
+    Type(CFGNode* atomic_type) : CFGNode(NodeKind::TYPE, "TYPE") {
+        addChildNode(atomic_type);
 
         generate_first();
     }
 
-    Type(std::unique_ptr<CFGNode>&& lbracket,
-         std::unique_ptr<CFGNode>&& int_literal,
-         std::unique_ptr<CFGNode>&& rbracket,
-         std::unique_ptr<CFGNode>&& type) : CFGNode(NodeKind::TYPE, "TYPE") {
-        addChildNode(std::move(lbracket));
-        addChildNode(std::move(int_literal));
-        addChildNode(std::move(rbracket));
-        addChildNode(std::move(type));
+    Type(CFGNode* lbracket,
+         CFGNode* int_literal,
+         CFGNode* rbracket,
+         CFGNode* type) : CFGNode(NodeKind::TYPE, "TYPE") {
+        addChildNode(lbracket);
+        addChildNode(int_literal);
+        addChildNode(rbracket);
+        addChildNode(type);
 
         generate_first();
     }

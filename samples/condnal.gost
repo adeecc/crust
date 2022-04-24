@@ -1,0 +1,13 @@
+fn main() void {
+    x = 1 + 2;
+    x = 2 + (3 * 4);
+    x = 5 + y();
+
+    if x == 3 {
+        done;
+    }
+
+    else {
+        done2;
+    }
+}

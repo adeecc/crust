@@ -12,10 +12,10 @@ class FnParamList_ : public CFGNode {
     }
 
    public:
-    FnParamList_(std::unique_ptr<CFGNode>&& comma,
-                 std::unique_ptr<CFGNode>&& fnParamList) : CFGNode(NodeKind::FN_PARAM_LIST_, "FN_PARAM_LIST_") {
-        addChildNode(std::move(comma));
-        addChildNode(std::move(fnParamList));
+    FnParamList_(CFGNode* comma,
+                 CFGNode* fnParamList) : CFGNode(NodeKind::FN_PARAM_LIST_, "FN_PARAM_LIST_") {
+        addChildNode(comma);
+        addChildNode(fnParamList);
 
         generate_first();
     }
@@ -34,10 +34,10 @@ class FnParam : public CFGNode {
     }
 
    public:
-    FnParam(std::unique_ptr<CFGNode>&& type,
-            std::unique_ptr<CFGNode>&& identifier) : CFGNode(NodeKind::FN_PARAM, "FN_PARAM") {
-        addChildNode(std::move(type));
-        addChildNode(std::move(identifier));
+    FnParam(CFGNode* type,
+            CFGNode* identifier) : CFGNode(NodeKind::FN_PARAM, "FN_PARAM") {
+        addChildNode(type);
+        addChildNode(identifier);
 
         generate_first();
     }
@@ -57,10 +57,10 @@ class FnParamList : public CFGNode {
     }
 
    public:
-    FnParamList(std::unique_ptr<CFGNode>&& fnParam,
-                std::unique_ptr<CFGNode>&& fnParamList_) : CFGNode(NodeKind::FN_PARAM_LIST, "FN_PARAM_LIST") {
-        addChildNode(std::move(fnParam));
-        addChildNode(std::move(fnParamList_));
+    FnParamList(CFGNode* fnParam,
+                CFGNode* fnParamList_) : CFGNode(NodeKind::FN_PARAM_LIST, "FN_PARAM_LIST") {
+        addChildNode(fnParam);
+        addChildNode(fnParamList_);
 
         generate_first();
     }
@@ -80,20 +80,22 @@ class FnDecl : public CFGNode {
         generate_first();
     }
 
-    FnDecl(std::unique_ptr<CFGNode>&& kw_fn,
-           std::unique_ptr<CFGNode>&& identifier,
-           std::unique_ptr<CFGNode>&& lparen,
-           std::unique_ptr<CFGNode>&& fnParamList,
-           std::unique_ptr<CFGNode>&& rparen,
-           std::unique_ptr<CFGNode>&& type,
-           std::unique_ptr<CFGNode>&& segment) : CFGNode(NodeKind::FN_DECL, "FN_DECL") {
-        addChildNode(std::move(kw_fn));
-        addChildNode(std::move(identifier));
-        addChildNode(std::move(lparen));
-        addChildNode(std::move(fnParamList));
-        addChildNode(std::move(rparen));
-        addChildNode(std::move(type));
-        addChildNode(std::move(segment));
+    FnDecl(CFGNode* kw_fn,
+           CFGNode* identifier,
+           CFGNode* lparen,
+           CFGNode* fnParamList,
+           CFGNode* rparen,
+           CFGNode* type,
+           CFGNode* segment) : CFGNode(NodeKind::FN_DECL, "FN_DECL") {
+        addCode(segment->getCode());
+
+        addChildNode(kw_fn);
+        addChildNode(identifier);
+        addChildNode(lparen);
+        addChildNode(fnParamList);
+        addChildNode(rparen);
+        addChildNode(type);
+        addChildNode(segment);
 
         generate_first();
     }
@@ -106,10 +108,12 @@ class VarDeclList_ : public CFGNode {
     }
 
    public:
-    VarDeclList_(std::unique_ptr<CFGNode>&& comma,
-                 std::unique_ptr<CFGNode>&& varDeclList) : CFGNode(NodeKind::VAR_DECL_LIST_, "VAR_DECL_LIST_") {
-        addChildNode(std::move(comma));
-        addChildNode(std::move(varDeclList));
+    VarDeclList_(CFGNode* comma,
+                 CFGNode* varDeclList) : CFGNode(NodeKind::VAR_DECL_LIST_, "VAR_DECL_LIST_") {
+        addCode(varDeclList->getCode());
+
+        addChildNode(comma);
+        addChildNode(varDeclList);
 
         generate_first();
     }
@@ -129,10 +133,12 @@ class VarDeclList : public CFGNode {
         generate_first();
     }
 
-    VarDeclList(std::unique_ptr<CFGNode>&& identifier,
-                std::unique_ptr<CFGNode>&& varDeclList_) : CFGNode(NodeKind::VAR_DECL_LIST, "VAR_DECL_LIST") {
-        addChildNode(std::move(identifier));
-        addChildNode(std::move(varDeclList_));
+    VarDeclList(CFGNode* identifier,
+                CFGNode* varDeclList_) : CFGNode(NodeKind::VAR_DECL_LIST, "VAR_DECL_LIST") {
+        addCode(varDeclList_->getCode());
+
+        addChildNode(identifier);
+        addChildNode(varDeclList_);
 
         generate_first();
     }
@@ -151,10 +157,12 @@ class VarDecl : public CFGNode {
         generate_first();
     }
 
-    VarDecl(std::unique_ptr<CFGNode>&& type,
-            std::unique_ptr<CFGNode>&& varDeclList) : CFGNode(NodeKind::VAR_DECL, "VAR_DECL") {
-        addChildNode(std::move(type));
-        addChildNode(std::move(varDeclList));
+    VarDecl(CFGNode* type,
+            CFGNode* varDeclList) : CFGNode(NodeKind::VAR_DECL, "VAR_DECL") {
+        addCode(varDeclList->getCode());
+
+        addChildNode(type);
+        addChildNode(varDeclList);
 
         generate_first();
     }
@@ -174,16 +182,18 @@ class Decl : public CFGNode {
         generate_first();
     }
 
-    Decl(std::unique_ptr<CFGNode>&& varDecl, std::unique_ptr<CFGNode>&& semi_colon) : CFGNode(NodeKind::DECL, "DECL") {
-        addChildNode(std::move(varDecl));
-        addChildNode(std::move(semi_colon));
+    Decl(CFGNode* varDecl, CFGNode* semi_colon) : CFGNode(NodeKind::DECL, "DECL") {
+        addCode(varDecl->getCode());
+
+        addChildNode(varDecl);
+        addChildNode(semi_colon);
 
         generate_first();
     }
 
-    Decl(std::unique_ptr<CFGNode>&& fnDecl) : CFGNode(NodeKind::DECL, "DECL") {
-        addChildNode(std::move(fnDecl));
-
+    Decl(CFGNode* fnDecl) : CFGNode(NodeKind::DECL, "DECL") {
+        addCode(fnDecl->getCode());
+        addChildNode(fnDecl);
         generate_first();
     }
 };
@@ -198,10 +208,13 @@ class DeclList : public CFGNode {
     }
 
    public:
-    DeclList(std::unique_ptr<CFGNode>&& decl,
-             std::unique_ptr<CFGNode>&& declList) : CFGNode(NodeKind::DECL_LIST, "DECL_LIST") {
-        addChildNode(std::move(decl));
-        addChildNode(std::move(declList));
+    DeclList(CFGNode* decl,
+             CFGNode* declList) : CFGNode(NodeKind::DECL_LIST, "DECL_LIST") {
+        addCode(decl->getCode());
+        addCode(declList->getCode());
+
+        addChildNode(decl);
+        addChildNode(declList);
 
         generate_first();
     }
@@ -225,8 +238,9 @@ class ProgDecl : public CFGNode {
         generate_first();
     }
 
-    ProgDecl(std::unique_ptr<CFGNode>&& declList) : CFGNode{NodeKind::PROG_DECL, "PROG_DECL"} {
-        addChildNode(std::move(declList));
+    ProgDecl(CFGNode* declList) : CFGNode{NodeKind::PROG_DECL, "PROG_DECL"} {
+        addCode(declList->getCode());
+        addChildNode(declList);
         generate_first();
     }
 };

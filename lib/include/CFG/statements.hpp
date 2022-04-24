@@ -18,8 +18,8 @@ class ReturnVar : public CFGNode {
     }
 
    public:
-    ReturnVar(std::unique_ptr<CFGNode>&& expression) : CFGNode{NodeKind::RETURN_VAR, "RETURN_VAR"} {
-        addChildNode(std::move(expression));
+    ReturnVar(CFGNode* expression) : CFGNode{NodeKind::RETURN_VAR, "RETURN_VAR"} {
+        addChildNode(expression);
 
         generate_first();
     }
@@ -39,12 +39,12 @@ class WhileLoop : public CFGNode {
         generate_first();
     }
 
-    WhileLoop(std::unique_ptr<CFGNode>&& kw_while,
-              std::unique_ptr<CFGNode>&& expression,
-              std::unique_ptr<CFGNode>&& segment) : CFGNode(NodeKind::WHILE_LOOP, "WHILE_LOOP") {
-        addChildNode(std::move(kw_while));
-        addChildNode(std::move(expression));
-        addChildNode(std::move(segment));
+    WhileLoop(CFGNode* kw_while,
+              CFGNode* expression,
+              CFGNode* segment) : CFGNode(NodeKind::WHILE_LOOP, "WHILE_LOOP") {
+        addChildNode(kw_while);
+        addChildNode(expression);
+        addChildNode(segment);
 
         generate_first();
     }
@@ -57,9 +57,9 @@ class LoopStep : public CFGNode {
     }
 
    public:
-    LoopStep(std::unique_ptr<CFGNode>&& range, std::unique_ptr<CFGNode>&& expression) : CFGNode(NodeKind::LOOP_STEP, "LOOP_STEP") {
-        addChildNode(std::move(range));
-        addChildNode(std::move(expression));
+    LoopStep(CFGNode* range, CFGNode* expression) : CFGNode(NodeKind::LOOP_STEP, "LOOP_STEP") {
+        addChildNode(range);
+        addChildNode(expression);
 
         generate_first();
     }
@@ -86,14 +86,14 @@ class LoopRange : public CFGNode {
         generate_first();
     }
 
-    LoopRange(std::unique_ptr<CFGNode>&& expression_start,
-              std::unique_ptr<CFGNode>&& range,
-              std::unique_ptr<CFGNode>&& expression_end,
-              std::unique_ptr<CFGNode>&& loopStep) : CFGNode(NodeKind::LOOP_RANGE, "LOOP_RANGE") {
-        addChildNode(std::move(expression_start));
-        addChildNode(std::move(range));
-        addChildNode(std::move(expression_end));
-        addChildNode(std::move(loopStep));
+    LoopRange(CFGNode* expression_start,
+              CFGNode* range,
+              CFGNode* expression_end,
+              CFGNode* loopStep) : CFGNode(NodeKind::LOOP_RANGE, "LOOP_RANGE") {
+        addChildNode(expression_start);
+        addChildNode(range);
+        addChildNode(expression_end);
+        addChildNode(loopStep);
 
         generate_first();
     }
@@ -109,16 +109,16 @@ class ForLoop : public CFGNode {
         generate_first();
     }
 
-    ForLoop(std::unique_ptr<CFGNode>&& kw_for,
-            std::unique_ptr<CFGNode>&& identifier,
-            std::unique_ptr<CFGNode>&& kw_in,
-            std::unique_ptr<CFGNode>&& loopRange,
-            std::unique_ptr<CFGNode>&& segment) : CFGNode(NodeKind::FOR_LOOP, "FOR_LOOP") {
-        addChildNode(std::move(kw_for));
-        addChildNode(std::move(identifier));
-        addChildNode(std::move(kw_in));
-        addChildNode(std::move(loopRange));
-        addChildNode(std::move(segment));
+    ForLoop(CFGNode* kw_for,
+            CFGNode* identifier,
+            CFGNode* kw_in,
+            CFGNode* loopRange,
+            CFGNode* segment) : CFGNode(NodeKind::FOR_LOOP, "FOR_LOOP") {
+        addChildNode(kw_for);
+        addChildNode(identifier);
+        addChildNode(kw_in);
+        addChildNode(loopRange);
+        addChildNode(segment);
 
         generate_first();
     }
@@ -148,74 +148,16 @@ class ElseBlock : public CFGNode {
     }
 
    public:
-    ElseBlock(std::unique_ptr<CFGNode>&& kw_else,
-              std::unique_ptr<CFGNode>&& segment) : CFGNode(NodeKind::ELSE_BLOCK, "ELSE_BLOCK") {
-        addChildNode(std::move(kw_else));
-        addChildNode(std::move(segment));
+    ElseBlock(CFGNode* kw_else,
+              CFGNode* segment) : CFGNode(NodeKind::ELSE_BLOCK, "ELSE_BLOCK") {
+        addCode(segment->getCode());
+        addChildNode(kw_else);
+        addChildNode(segment);
 
         generate_first();
     }
 
     ElseBlock() : CFGNode{NodeKind::ELSE_BLOCK, "ELSE_BLOCK"} {
-        generate_first();
-    }
-};
-
-class ElifBlock : public CFGNode {
-    void generate_first() {
-        first.insert(Lexer::Token::KW_ELIF);
-    }
-
-   public:
-    ElifBlock() : CFGNode(NodeKind::ERROR, "ERROR") {
-        generate_first();
-    }
-
-    ElifBlock(std::unique_ptr<CFGNode>&& kw_elif,
-              std::unique_ptr<CFGNode>&& expression,
-              std::unique_ptr<CFGNode>&& segment) : CFGNode(NodeKind::ELIF_BLOCK, "ELIF_BLOCK") {
-        addChildNode(std::move(kw_elif));
-        addChildNode(std::move(expression));
-        addChildNode(std::move(segment));
-
-        generate_first();
-    }
-};
-
-class ElifBlocks : public CFGNode {
-    void generate_first() {
-        first.insert(Lexer::Token::KW_ELIF);
-        first.insert(Lexer::Token::KW_ELSE);
-        first.insert(Lexer::Token::LBRACE);
-        for (unsigned t = (unsigned)Lexer::Token::KW_INT_32; t <= (unsigned)Lexer::Token::KW_VOID; ++t) {
-            first.insert(static_cast<Lexer::Token>(t));
-        }
-        first.insert(Lexer::Token::LBRACKET);
-        first.insert(Lexer::Token::KW_RETURN);
-        first.insert(Lexer::Token::IDENTIFIER);
-        first.insert(Lexer::Token::LPAREN);
-        first.insert(Lexer::Token::OP_MINUS);
-        first.insert(Lexer::Token::KW_TRUE);
-        first.insert(Lexer::Token::KW_FALSE);
-        first.insert(Lexer::Token::STR_LITERAL);
-        first.insert(Lexer::Token::KW_IF);
-        first.insert(Lexer::Token::KW_FOR);
-        first.insert(Lexer::Token::KW_WHILE);
-        first.insert(Lexer::Token::FLOAT_LITERAL);
-        first.insert(Lexer::Token::INT_LITERAL);
-        first.insert(Lexer::Token::RBRACE);
-    }
-
-   public:
-    ElifBlocks(std::unique_ptr<CFGNode>&& elif_block,
-               std::unique_ptr<CFGNode>&& elif_blocks) : CFGNode{NodeKind::ELIF_BLOCKS, "ELIF_BLOCKS"} {
-        addChildNode(std::move(elif_block));
-        addChildNode(std::move(elif_blocks));
-
-        generate_first();
-    }
-
-    ElifBlocks() : CFGNode{NodeKind::ELIF_BLOCKS, "ELIF_BLOCKS"} {
         generate_first();
     }
 };
@@ -230,15 +172,42 @@ class IfBlock : public CFGNode {
         generate_first();
     }
 
-    IfBlock(std::unique_ptr<CFGNode>&& kw_if,
-            std::unique_ptr<CFGNode>&& expression,
-            std::unique_ptr<CFGNode>&& segment) : CFGNode(NodeKind::IF_BLOCK, "IF_BLOCK") {
-        addChildNode(std::move(kw_if));
-        addChildNode(std::move(expression));
-        addChildNode(std::move(segment));
+    IfBlock(CFGNode* kw_if,
+            CFGNode* expression,
+            CFGNode* segment) : CFGNode(NodeKind::IF_BLOCK, "IF_BLOCK") {
+        addChildNode(kw_if);
+        addChildNode(expression);
+        addChildNode(segment);
 
         generate_first();
     }
+
+    IfBlock(CFGNode* kw_if,
+            CFGNode* expression,
+            CFGNode* segment,
+            Label* false_label,
+            Label* last_label) : CFGNode(NodeKind::IF_BLOCK, "IF_BLOCK"), last_label(last_label), false_label(false_label) {
+        addCode(expression->getCode());
+        addCode(
+            new Operator(Lexer::Token::OP_EQ),
+            expression->getCode().back().getRes(),
+            new Constant(0),
+            false_label);
+        addCode(segment->getCode());
+        addCode(
+            new Operator("JUMP"),
+            nullptr,
+            nullptr,
+            last_label);
+
+        addChildNode(kw_if);
+        addChildNode(expression);
+        addChildNode(segment);
+
+        generate_first();
+    }
+
+    Label *last_label = nullptr, *false_label = nullptr;
 };
 
 class ReturnStmt : public CFGNode {
@@ -251,10 +220,10 @@ class ReturnStmt : public CFGNode {
         generate_first();
     }
 
-    ReturnStmt(std::unique_ptr<CFGNode>&& kw_return,
-               std::unique_ptr<CFGNode>&& returnVar) : CFGNode{NodeKind::RETURN_STMT, "RETURN_STMT"} {
-        addChildNode(std::move(kw_return));
-        addChildNode(std::move(returnVar));
+    ReturnStmt(CFGNode* kw_return,
+               CFGNode* returnVar) : CFGNode{NodeKind::RETURN_STMT, "RETURN_STMT"} {
+        addChildNode(kw_return);
+        addChildNode(returnVar);
 
         generate_first();
     }
@@ -271,8 +240,8 @@ class LoopStmt : public CFGNode {
         generate_first();
     }
 
-    LoopStmt(std::unique_ptr<CFGNode>&& loopType) : CFGNode{NodeKind::LOOP_STMT, "LOOP_STMT"} {
-        addChildNode(std::move(loopType));
+    LoopStmt(CFGNode* loopType) : CFGNode{NodeKind::LOOP_STMT, "LOOP_STMT"} {
+        addChildNode(loopType);
 
         generate_first();
     }
@@ -288,12 +257,32 @@ class ConditionalStmt : public CFGNode {
         generate_first();
     }
 
-    ConditionalStmt(std::unique_ptr<CFGNode>&& if_block,
-                    std::unique_ptr<CFGNode>&& elif_blocks,
-                    std::unique_ptr<CFGNode>&& else_block) : CFGNode{NodeKind::CONDITIONAL_STMT, "CONDITIONAL_STMT"} {
-        addChildNode(std::move(if_block));
-        addChildNode(std::move(elif_blocks));
-        addChildNode(std::move(else_block));
+    ConditionalStmt(CFGNode* if_block,
+                    CFGNode* else_block) : CFGNode{NodeKind::CONDITIONAL_STMT, "CONDITIONAL_STMT"} {
+        auto false_label = new Label();
+        auto last_label = new Label();
+
+        auto children = if_block->getChildrenNodes();
+        delete if_block;
+
+        if (children.size() != 3) {
+            std::cout << "FATAL ERROR: Generating TAC failed. \n";
+            addChildNode(if_block);
+            addChildNode(else_block);
+
+            generate_first();
+            return;
+        }
+
+        if_block = new IfBlock(children[0], children[1], children[2], false_label, last_label);
+
+        addCode(if_block->getCode());
+        addCode(nullptr, nullptr, nullptr, false_label);
+        addCode(else_block->getCode());
+        addCode(nullptr, nullptr, nullptr, last_label);
+
+        addChildNode(if_block);
+        addChildNode(else_block);
 
         generate_first();
     }
@@ -309,12 +298,19 @@ class AssignmentStmt : public CFGNode {
         generate_first();
     }
 
-    AssignmentStmt(std::unique_ptr<CFGNode>&& identifier,
-                   std::unique_ptr<CFGNode>&& assign,
-                   std::unique_ptr<CFGNode>&& expression) : CFGNode{NodeKind::ASSIGNMENT_STMT, "ASSIGNMENT_STMT"} {
-        addChildNode(std::move(identifier));
-        addChildNode(std::move(assign));
-        addChildNode(std::move(expression));
+    AssignmentStmt(Token* identifier,
+                   CFGNode* assign,
+                   CFGNode* expression) : CFGNode{NodeKind::ASSIGNMENT_STMT, "ASSIGNMENT_STMT"} {
+        addCode(expression->getCode());
+        addCode(
+            new Operator(Lexer::Token::ASSIGN),
+            expression->getCode().back().getRes(),
+            nullptr,
+            new Name(identifier->getVal()));
+
+        addChildNode(identifier);
+        addChildNode(assign);
+        addChildNode(expression);
 
         generate_first();
     }
@@ -346,15 +342,19 @@ class Stmt : public CFGNode {
         generate_first();
     }
 
-    Stmt(std::unique_ptr<CFGNode>&& stmtNode) : CFGNode(NodeKind::STMT, "STMT") {
-        addChildNode(std::move(stmtNode));
+    Stmt(CFGNode* stmtNode) : CFGNode(NodeKind::STMT, "STMT") {
+        addCode(stmtNode->getCode());
+
+        addChildNode(stmtNode);
 
         generate_first();
     }
 
-    Stmt(std::unique_ptr<CFGNode>&& stmtNode, std::unique_ptr<CFGNode>&& semi_colon) : CFGNode(NodeKind::STMT, "STMT") {
-        addChildNode(std::move(stmtNode));
-        addChildNode(std::move(semi_colon));
+    Stmt(CFGNode* stmtNode, CFGNode* semi_colon) : CFGNode(NodeKind::STMT, "STMT") {
+        addCode(stmtNode->getCode());
+
+        addChildNode(stmtNode);
+        addChildNode(semi_colon);
 
         generate_first();
     }
@@ -383,10 +383,13 @@ class StmtList : public CFGNode {
     }
 
    public:
-    StmtList(std::unique_ptr<CFGNode>&& stmt,
-             std::unique_ptr<CFGNode>&& stmtList) : CFGNode(NodeKind::STMT_LIST, "STMT_LIST") {
-        addChildNode(std::move(stmt));
-        addChildNode(std::move(stmtList));
+    StmtList(CFGNode* stmt,
+             CFGNode* stmtList) : CFGNode(NodeKind::STMT_LIST, "STMT_LIST") {
+        addCode(stmt->getCode());
+        addCode(stmtList->getCode());
+
+        addChildNode(stmt);
+        addChildNode(stmtList);
 
         generate_first();
     }

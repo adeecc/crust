@@ -15,60 +15,57 @@ class Parser {
     explicit Parser() : mCurrentToken{Lexer::Token::TOK_SOF} {}
     ~Parser() = default;  // Not optimal? Do I need to add the other 1/3
 
-    std::unique_ptr<CFGNode> parseProgram(const std::string& filename);
+    CFGNode* parseProgram(const std::string& filename);
 
    private:
     void skipToNextSemiColon();
     Lexer::Token peekNextToken();
 
    private:
-    std::unique_ptr<ProgDecl> parseProgramDecl();
+    ProgDecl* parseProgramDecl();
 
-    std::unique_ptr<DeclList> parseDeclList();
-    std::unique_ptr<Decl> parseDecl();
+    DeclList* parseDeclList();
+    Decl* parseDecl();
 
-    std::unique_ptr<VarDecl> parseVarDecl();
-    std::unique_ptr<VarDeclList> parseVarDeclList();
-    std::unique_ptr<VarDeclList_> parseVarDeclList_();
+    VarDecl* parseVarDecl();
+    VarDeclList* parseVarDeclList();
+    VarDeclList_* parseVarDeclList_();
 
-    std::unique_ptr<FnDecl> parseFnDecl();
-    std::unique_ptr<FnParamList> parseFnParamList();
-    std::unique_ptr<FnParamList_> parseFnParamList_();
-    std::unique_ptr<FnParam> parseFnParam();
+    FnDecl* parseFnDecl();
+    FnParamList* parseFnParamList();
+    FnParamList_* parseFnParamList_();
+    FnParam* parseFnParam();
 
-    std::unique_ptr<Expression> parseExpression();
-    std::unique_ptr<ExpressionRHS> parseExpressionRHS();
+    Expression* parseExpression();
 
-    std::unique_ptr<Term> parseTerm();
-    std::unique_ptr<FloatTerm> parseFloatTerm();
-    std::unique_ptr<ArraySubscript> parseArraySubscript();
-    std::unique_ptr<Call> parseCall();
-    std::unique_ptr<CallParamList> parseCallParamList();
-    std::unique_ptr<CallParamList_> parseCallParamList_();
+    Term* parseTerm();
+    FloatTerm* parseFloatTerm();
+    ArraySubscript* parseArraySubscript();
+    Call* parseCall();
+    CallParamList* parseCallParamList();
+    CallParamList_* parseCallParamList_();
 
-    std::unique_ptr<StmtList> parseStmtList();
-    std::unique_ptr<Stmt> parseStmt();
-    std::unique_ptr<ConditionalStmt> parseConditionalStmt();
-    std::unique_ptr<AssignmentStmt> parseAssignmentStmt();
-    std::unique_ptr<LoopStmt> parseLoopStmt();
-    std::unique_ptr<ReturnStmt> parseReturnStmt();
+    StmtList* parseStmtList();
+    Stmt* parseStmt();
+    ConditionalStmt* parseConditionalStmt();
+    AssignmentStmt* parseAssignmentStmt();
+    LoopStmt* parseLoopStmt();
+    ReturnStmt* parseReturnStmt();
 
-    std::unique_ptr<IfBlock> parseIfBlock();
-    std::unique_ptr<ElifBlocks> parseElifBlocks();
-    std::unique_ptr<ElifBlock> parseElifBlock();
-    std::unique_ptr<ElseBlock> parseElseBlock();
+    IfBlock* parseIfBlock();
+    ElseBlock* parseElseBlock();
 
-    std::unique_ptr<ForLoop> parseForLoop();
-    std::unique_ptr<LoopRange> parseLoopRange();
-    std::unique_ptr<LoopStep> parseLoopStep();
+    ForLoop* parseForLoop();
+    LoopRange* parseLoopRange();
+    LoopStep* parseLoopStep();
 
-    std::unique_ptr<WhileLoop> parseWhileLoop();
+    WhileLoop* parseWhileLoop();
 
-    std::unique_ptr<ReturnVar> parseReturnVar();
+    ReturnVar* parseReturnVar();
 
-    std::unique_ptr<Segment> parseSegment();
-    std::unique_ptr<Token> parseToken(Lexer::Token token);
-    std::unique_ptr<Type> parseType();
+    Segment* parseSegment();
+    Token* parseToken(Lexer::Token token);
+    Type* parseType();
 
    private:
     Lexer mLexer;

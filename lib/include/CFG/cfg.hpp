@@ -2,11 +2,12 @@
 
 #include <assert.h>
 
+#include <TAC/Quad.hpp>
 #include <common/sourceloc.hpp>
+#include <fstream>
 #include <iostream>
 #include <list>
 #include <memory>
-#include <ostream>
 #include <parser/lexer.hpp>
 #include <set>
 #include <string>
@@ -16,7 +17,7 @@
 namespace Crust {
 
 class CFGNode;
-using ChildrenNode = std::vector<std::unique_ptr<CFGNode>>;
+using ChildrenNode = std::vector<CFGNode*>;
 
 class CFGNode {
    public:
@@ -92,21 +93,30 @@ class CFGNode {
     const std::string& getName() const { return mName; }
     const ChildrenNode& getChildrenNodes() const { return mChildren; }
     const SourceLocation& getSourceLocation() const { return mSrcLoc; }
-    std::set<Lexer::Token> first;
+    std::vector<Quad>& getCode() { return mCode; }
 
-    void addChildNode(std::unique_ptr<CFGNode>&& node) { mChildren.push_back(std::move(node)); }
+    void addChildNode(CFGNode* node) { mChildren.push_back(node); }
+    void addCode(std::vector<Quad>& code) { mCode.insert(mCode.end(), code.begin(), code.end()); }
+    void addCode(Quad& code) { mCode.push_back(code); }
+    void addCode(Operator* instr, Address* arg1, Address* arg2, Address* res) { mCode.emplace_back(instr, arg1, arg2, res); }
 
-    // TODO: Write to file directly instead of stdout?
-    void generateDotFile() {
-        std::cout << "digraph CFG {\n";
-        std::cout << "\tgraph [ dpi = 300 ];\n";
-        std::cout << "\tfontname=\"Helvetica,Arial,sans-serif\"\n";
-        std::cout << "\tnode [fontname=\"Helvetica,Arial,sans-serif\"]\n";
-        std::cout << "\tedge [fontname=\"Helvetica,Arial,sans-serif\"]\n";
-        std::cout << "\tnode [shape = circle];\n";
+    void generateDotFile(std::string fname) {
+        std::cout << "Writing dot file to: " << fname << "\n";
+        std::ofstream stream(fname);
 
-        _generateDotFileHelper();
-        std::cout << "}\n";
+        stream << "digraph CFG {\n";
+        _generateDotFileHelper(stream);
+        stream << "}\n";
+    }
+
+    void writeTAC(std::string fname) {
+        std::cout << "Writing Intermediate Code to: " << fname << "\n";
+        std::ofstream stream(fname);
+        stream << "| Operation | Arg1 | Arg2 | Res |\n";
+        stream << "|---|---|---|---|\n";
+        for (auto& quad : mCode) {
+            stream << quad << "\n";
+        }
     }
 
     friend std::ostream& operator<<(std::ostream& stream, const CFGNode& node) {
@@ -143,8 +153,22 @@ class CFGNode {
     template <class T>
     T* getChildNodeAs(std::size_t childIdx) const {
         assert(childIdx < mChildren.size());
-        return static_cast<T*>(mChildren[childIdx].get());
+        return mChildren[childIdx];
     }
+
+    void _generateDotFileHelper(std::ofstream& stream) {
+        for (const auto& child : getChildrenNodes()) {
+            stream << "\t" << getName() << "_" << getUID() << "->" << child->getName() << "_" << child->getUID() << "\n";
+        }
+
+        for (const auto& child : getChildrenNodes()) {
+            child->_generateDotFileHelper(stream);
+        }
+    }
+
+   public:
+    // TODO: Use CRTP to convert this to a static variable
+    std::set<Lexer::Token> first;
 
    protected:
     uint64_t mUid;
@@ -153,15 +177,6 @@ class CFGNode {
     ChildrenNode mChildren;
     SourceLocation mSrcLoc;
 
-   protected:
-    void _generateDotFileHelper() {
-        for (const auto& child : getChildrenNodes()) {
-            std::cout << getName() << "_" << getUID() << "->" << child->getName() << "_" << child->getUID() << "\n";
-        }
-
-        for (const auto& child : getChildrenNodes()) {
-            child->_generateDotFileHelper();
-        }
-    }
+    std::vector<Quad> mCode;
 };
 }  // namespace Crust

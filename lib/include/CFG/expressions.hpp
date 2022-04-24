@@ -1,6 +1,8 @@
 #pragma once
 
 #include <CFG/cfg.hpp>
+#include <CFG/misc.hpp>
+#include <TAC/Quad.hpp>
 
 namespace Crust {
 
@@ -11,10 +13,12 @@ class CallParamList_ : public CFGNode {
     }
 
    public:
-    CallParamList_(std::unique_ptr<CFGNode>&& comma,
-                   std::unique_ptr<CFGNode>&& CallParamList) : CFGNode(NodeKind::CALL_PARAM_LIST_, "CALL_PARAM_LIST_") {
-        addChildNode(std::move(comma));
-        addChildNode(std::move(CallParamList));
+    CallParamList_(CFGNode* comma,
+                   CFGNode* CallParamList) : CFGNode(NodeKind::CALL_PARAM_LIST_, "CALL_PARAM_LIST_") {
+        addCode(CallParamList->getCode());
+
+        addChildNode(comma);
+        addChildNode(CallParamList);
 
         generate_first();
     }
@@ -38,10 +42,13 @@ class CallParamList : public CFGNode {
     }
 
    public:
-    CallParamList(std::unique_ptr<CFGNode>&& expression,
-                  std::unique_ptr<CFGNode>&& CallParamList_) : CFGNode(NodeKind::CALL_PARAM_LIST, "CALL_PARAM_LIST") {
-        addChildNode(std::move(expression));
-        addChildNode(std::move(CallParamList_));
+    CallParamList(CFGNode* expression,
+                  CFGNode* CallParamList_) : CFGNode(NodeKind::CALL_PARAM_LIST, "CALL_PARAM_LIST") {
+        addChildNode(expression);
+        addChildNode(CallParamList_);
+
+        addCode(expression->getCode());
+        addCode(CallParamList_->getCode());
 
         generate_first();
     }
@@ -57,14 +64,21 @@ class Call : public CFGNode {
     }
 
    public:
-    Call(std::unique_ptr<CFGNode>&& identifier,
-         std::unique_ptr<CFGNode>&& lparen,
-         std::unique_ptr<CFGNode>&& callParamList,
-         std::unique_ptr<CFGNode>&& rparen) : CFGNode(NodeKind::CALL, "CALL") {
-        addChildNode(std::move(identifier));
-        addChildNode(std::move(lparen));
-        addChildNode(std::move(callParamList));
-        addChildNode(std::move(rparen));
+    Call(Token* identifier,
+         CFGNode* lparen,
+         CFGNode* callParamList,
+         CFGNode* rparen) : CFGNode(NodeKind::CALL, "CALL") {
+        addChildNode(identifier);
+        addChildNode(lparen);
+        addChildNode(callParamList);
+        addChildNode(rparen);
+
+        addCode(callParamList->getCode());
+        addCode(
+            new Operator("CALL"),
+            new Name(identifier->getVal()),
+            nullptr,
+            new TempVar());
 
         generate_first();
     }
@@ -84,14 +98,21 @@ class ArraySubscript : public CFGNode {
         generate_first();
     }
 
-    ArraySubscript(std::unique_ptr<CFGNode>&& identifier,
-                   std::unique_ptr<CFGNode>&& lbracket,
-                   std::unique_ptr<CFGNode>&& expression,
-                   std::unique_ptr<CFGNode>&& rbracket) : CFGNode(NodeKind::ARRAY_SUBSCRIPT, "ARRAY_SUBSCRIPT") {
-        addChildNode(std::move(identifier));
-        addChildNode(std::move(lbracket));
-        addChildNode(std::move(expression));
-        addChildNode(std::move(rbracket));
+    ArraySubscript(Token* identifier,
+                   CFGNode* lbracket,
+                   CFGNode* expression,
+                   CFGNode* rbracket) : CFGNode(NodeKind::ARRAY_SUBSCRIPT, "ARRAY_SUBSCRIPT") {
+        addCode(expression->getCode());
+        addCode(
+            new Operator("SUBSCRIPT"),
+            new Name(identifier->getVal()),
+            expression->getCode().back().getRes(),
+            new TempVar());
+
+        addChildNode(identifier);
+        addChildNode(lbracket);
+        addChildNode(expression);
+        addChildNode(rbracket);
 
         generate_first();
     }
@@ -108,8 +129,13 @@ class FloatTerm : public CFGNode {
         generate_first();
     }
 
-    FloatTerm(std::unique_ptr<CFGNode>&& literal) : CFGNode(NodeKind::FLOAT_TERM, "FLOAT_TERM") {
-        addChildNode(std::move(literal));
+    FloatTerm(Token* literal) : CFGNode(NodeKind::FLOAT_TERM, "FLOAT_TERM") {
+        addCode(
+            new Operator(Lexer::Token::ASSIGN),
+            new Name(literal->getVal()),
+            nullptr,
+            new TempVar());
+        addChildNode(literal);
 
         generate_first();
     }
@@ -132,54 +158,53 @@ class Term : public CFGNode {
         generate_first();
     }
 
-    Term(std::unique_ptr<CFGNode>&& lparen,
-         std::unique_ptr<CFGNode>&& expression,
-         std::unique_ptr<CFGNode>&& rparen) : CFGNode(NodeKind::TERM, "TERM") {
-        addChildNode(std::move(lparen));
-        addChildNode(std::move(expression));
-        addChildNode(std::move(rparen));
+    Term(CFGNode* lparen,
+         CFGNode* expression,
+         CFGNode* rparen) : CFGNode(NodeKind::TERM, "TERM") {
+        addCode(expression->getCode());
+        addCode(
+            new Operator(Lexer::Token::ASSIGN),
+            expression->getCode().back().getRes(),
+            nullptr,
+            new TempVar());
+
+        addChildNode(lparen);
+        addChildNode(expression);
+        addChildNode(rparen);
 
         generate_first();
     }
 
-    Term(std::unique_ptr<CFGNode>&& val) : CFGNode(NodeKind::TERM, "TERM") {
-        addChildNode(std::move(val));
+    Term(Token* literal_or_id) : CFGNode(NodeKind::TERM, "TERM") {
+        addCode(
+            new Operator(Lexer::Token::ASSIGN),
+            new Name(literal_or_id->getVal()),
+            nullptr,
+            new TempVar());
 
+        addChildNode(literal_or_id);
         generate_first();
     }
 
-    Term(std::unique_ptr<CFGNode>&& op_minus,
-         std::unique_ptr<CFGNode>&& val) : CFGNode(NodeKind::TERM, "TERM") {
-        addChildNode(std::move(op_minus));
-        addChildNode(std::move(val));
+    Term(CFGNode* termNode) : CFGNode(NodeKind::TERM, "TERM") {
+        addCode(termNode->getCode());
 
-        generate_first();
-    }
-};
-
-class ExpressionRHS : public CFGNode {
-    void generate_first() {
-        for (unsigned t = (unsigned)Lexer::Token::OP_PLUS; t <= (unsigned)Lexer::Token::OP_LT; ++t) {
-            first.insert(static_cast<Lexer::Token>(t));
-        }
-        first.insert(Lexer::Token::RPAREN);
-        first.insert(Lexer::Token::RBRACKET);
-        first.insert(Lexer::Token::COMMA);
-        first.insert(Lexer::Token::SEMI_COLON);
-        first.insert(Lexer::Token::LBRACE);
-        first.insert(Lexer::Token::RANGE);
-    }
-
-   public:
-    ExpressionRHS(std::unique_ptr<CFGNode>&& bin_op,
-                  std::unique_ptr<CFGNode>&& expression) : CFGNode(NodeKind::EXPRESSION_RHS, "EXPRESSION_RHS") {
-        addChildNode(std::move(bin_op));
-        addChildNode(std::move(expression));
-
+        addChildNode(termNode);
         generate_first();
     }
 
-    ExpressionRHS() : CFGNode(NodeKind::EXPRESSION_RHS, "EXPRESSION_RHS") {
+    Term(CFGNode* op_minus,
+         CFGNode* val) : CFGNode(NodeKind::TERM, "TERM") {
+        addCode(val->getCode());
+        addCode(
+            new Operator("UNARY_MINUS"),
+            val->getCode().back().getRes(),
+            nullptr,
+            new TempVar());
+
+        addChildNode(op_minus);
+        addChildNode(val);
+
         generate_first();
     }
 };
@@ -201,10 +226,28 @@ class Expression : public CFGNode {
         generate_first();
     }
 
-    Expression(std::unique_ptr<CFGNode>&& term,
-               std::unique_ptr<CFGNode>&& expression_rhs) : CFGNode(NodeKind::EXPRESSION, "EXPRESSION") {
-        addChildNode(std::move(term));
-        addChildNode(std::move(expression_rhs));
+    Expression(CFGNode* term,
+               Token* bin_op,
+               CFGNode* expression) : CFGNode(NodeKind::EXPRESSION, "EXPRESSION") {
+        addCode(term->getCode());
+        addCode(expression->getCode());
+
+        addCode(
+            new Operator(bin_op->getToken()),
+            term->getCode().back().getRes(),
+            expression->getCode().back().getRes(),
+            new TempVar());
+
+        addChildNode(term);
+        addChildNode(bin_op);
+        addChildNode(expression);
+
+        generate_first();
+    }
+
+    Expression(CFGNode* term) : CFGNode(NodeKind::EXPRESSION, "EXPRESSION") {
+        addChildNode(term);
+        addCode(term->getCode());
 
         generate_first();
     }

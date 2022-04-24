@@ -13,7 +13,8 @@ int main() {
 
     std::cout << *res;
 
-    res->generateDotFile();
+    res->writeTAC("tac.md");
+    res->generateDotFile("cfg.dot");
 
     return 0;
 }
